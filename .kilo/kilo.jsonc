@@ -1,0 +1,13 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "mcp": {
+    "dart-flutter": {
+      "type": "local",
+      "command": [
+        "dart",
+        "mcp-server"
+      ],
+      "enabled": true
+    }
+  }
+}
