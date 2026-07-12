@@ -100,11 +100,11 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             style: AppTextStyles.displayMedium,
           ),
           SizedBox(height: AppSpacing.md),
-          Text(
-            'BacNafa est ton compagnon d\'apprentissage personnel pour réussir ton examen avec confiance.',
-            textAlign: TextAlign.center,
-            style: AppTextStyles.bodyMedium,
-          ),
+            Text(
+              'BacNafa est ton hub intelligent de sujets et corrections pour réussir ton examen avec confiance.',
+              textAlign: TextAlign.center,
+              style: AppTextStyles.bodyMedium,
+            ),
           const Spacer(),
         ],
       ),
@@ -132,7 +132,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           SizedBox(height: AppSpacing.lg),
           Expanded(
             child: ListView(
-              shrinkWrap: true,
               padding: EdgeInsets.zero,
               children: classes.map((c) => Padding(
                 padding: EdgeInsets.only(bottom: AppSpacing.sm),
@@ -144,7 +143,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               )).toList(),
             ),
           ),
-          const Spacer(),
         ],
       ),
     );
@@ -175,7 +173,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           SizedBox(height: AppSpacing.lg),
           Expanded(
             child: ListView(
-              shrinkWrap: true,
               padding: EdgeInsets.zero,
               children: series.map((s) => Padding(
                 padding: EdgeInsets.only(bottom: AppSpacing.sm),
@@ -188,19 +185,18 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               )).toList(),
             ),
           ),
-          const Spacer(),
         ],
       ),
     );
   }
 
   Widget _buildPage4(OnboardingData data) {
-    final goals = [
-      'Réviser mes cours',
-      'Faire des exercices',
-      'Comprendre mes erreurs',
-      'Préparer les examens',
-    ];
+      final goals = [
+        'Retrouver mes sujets',
+        'Faire des exercices',
+        'Comprendre mes erreurs',
+        'Préparer les examens',
+      ];
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: Column(
@@ -220,7 +216,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           SizedBox(height: AppSpacing.lg),
           Expanded(
             child: ListView(
-              shrinkWrap: true,
               padding: EdgeInsets.zero,
               children: goals.map((g) => Padding(
                 padding: EdgeInsets.only(bottom: AppSpacing.sm),
@@ -240,7 +235,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               )).toList(),
             ),
           ),
-          const Spacer(),
         ],
       ),
     );

@@ -17,7 +17,7 @@ class SubjectsPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Matières'),
+        title: const Text('Catalogue des sujets'),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),

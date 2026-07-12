@@ -5,8 +5,7 @@ import 'package:bac_nafa/core/design/app_spacing.dart';
 import 'package:bac_nafa/core/widgets/app_card_premium.dart';
 import 'package:bac_nafa/core/widgets/app_primary_button.dart';
 import 'package:bac_nafa/core/widgets/app_section_title.dart';
-import 'package:bac_nafa/core/widgets/app_progress_indicator.dart';
-import 'package:bac_nafa/core/widgets/app_bottom_navigation.dart';
+import 'package:go_router/go_router.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,8 +15,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _navIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,54 +43,34 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(height: AppSpacing.xs),
             Text(
-              'Prêt à booster tes révisions aujourd\'hui ?',
+              'Prépare ton Bac avec les sujets et l\'aide de l\'IA.',
               style: AppTextStyles.bodyMedium,
             ),
             SizedBox(height: AppSpacing.lg),
 
-            AppCardPremium(
-              shadows: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
+            // Barre de recherche principale
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.outline),
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  icon: const Icon(Icons.search, color: AppColors.textSecondary),
+                  hintText: 'Rechercher un sujet, une matière...',
+                  border: InputBorder.none,
+                  hintStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
                 ),
-              ],
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Row(
-                    children: [
-                      Icon(Icons.stars, color: AppColors.aiAccent),
-                      SizedBox(width: 8),
-                      Text(
-                        'Objectif du jour',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.aiAccent,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: AppSpacing.sm),
-                  Text(
-                    'Terminer le chapitre sur les Intégrales',
-                    style: AppTextStyles.titleMedium,
-                  ),
-                  SizedBox(height: AppSpacing.md),
-                  const AppProgressIndicator(
-                    label: 'Progression du chapitre',
-                    progress: 0.65,
-                    color: AppColors.aiAccent,
-                  ),
-                ],
+                onSubmitted: (value) {},
               ),
             ),
             SizedBox(height: AppSpacing.xl),
 
             const AppSectionTitle(
-              title: 'Mes Matières',
-              subtitle: 'Toutes tes ressources organisées',
+              title: 'Explorer les sujets',
+              subtitle: 'Trouve rapidement tes épreuves',
               action: Text(
                 'Voir tout',
                 style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
@@ -105,28 +82,39 @@ class _HomePageState extends State<HomePage> {
                 scrollDirection: Axis.horizontal,
                 children: [
                   _SubjectCard(
-                    title: 'Maths',
+                    title: 'Mathématiques',
                     color: AppColors.tintBlue,
                     icon: Icons.calculate,
                     iconColor: AppColors.primary,
+                    onTap: () => context.push('/subjects'),
                   ),
                   _SubjectCard(
                     title: 'Physique',
                     color: AppColors.tintOrange,
                     icon: Icons.science,
                     iconColor: Colors.orange,
+                    onTap: () => context.push('/subjects'),
                   ),
                   _SubjectCard(
-                    title: 'SVT',
+                    title: 'Chimie',
                     color: AppColors.tintGreen,
                     icon: Icons.biotech,
                     iconColor: Colors.green,
+                    onTap: () => context.push('/subjects'),
                   ),
                   _SubjectCard(
-                    title: 'Philo',
+                    title: 'Français',
                     color: AppColors.tintPurple,
-                    icon: Icons.menu_book,
+                    icon: Icons.language,
                     iconColor: Colors.purple,
+                    onTap: () => context.push('/subjects'),
+                  ),
+                  _SubjectCard(
+                    title: 'Philosophie',
+                    color: AppColors.tintBlue,
+                    icon: Icons.menu_book,
+                    iconColor: AppColors.primary,
+                    onTap: () => context.push('/subjects'),
                   ),
                 ],
               ),
@@ -134,44 +122,23 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: AppSpacing.xl),
 
             const AppSectionTitle(
-              title: 'Ma Préparation',
-              subtitle: 'Suis ton évolution vers le Bac',
+              title: 'Mes derniers sujets',
+              subtitle: 'Reprends tes révisions',
             ),
-            AppCardPremium(
-              child: Column(
-                children: [
-                  const AppProgressIndicator(
-                    label: 'Préparation Globale',
-                    progress: 0.42,
-                  ),
-                  SizedBox(height: AppSpacing.md),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _StatItem(label: 'Matières', value: '4/6'),
-                      _StatItem(label: 'Exercices', value: '12/40'),
-                      _StatItem(label: 'Séries', value: '2/10'),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: AppSpacing.xl),
-
-            const AppSectionTitle(
-              title: 'Exercices Récents',
-              subtitle: 'Reprends là où tu t\'es arrêté',
-            ),
-            _RecentExerciseItem(
-              title: 'Limites et Continuité',
+            _RecentSubjectItem(
               subject: 'Mathématiques',
-              progress: 0.8,
+              year: 'BAC 2026',
+              series: 'Sciences Mathématiques',
+              hasCorrection: true,
+              onTap: () {},
             ),
             SizedBox(height: AppSpacing.sm),
-            _RecentExerciseItem(
-              title: 'Oxydoréduction',
+            _RecentSubjectItem(
               subject: 'Physique-Chimie',
-              progress: 0.3,
+              year: 'BAC 2025',
+              series: 'Sciences Expérimentales',
+              hasCorrection: false,
+              onTap: () {},
             ),
             SizedBox(height: AppSpacing.xl),
 
@@ -188,20 +155,20 @@ class _HomePageState extends State<HomePage> {
                   const Icon(Icons.auto_awesome, size: 48, color: AppColors.aiAccent),
                   SizedBox(height: AppSpacing.md),
                   Text(
-                    'Assistant IA BacNafa',
+                    'Besoin d\'aide sur un sujet ?',
                     style: AppTextStyles.titleMedium,
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: AppSpacing.xs),
                   Text(
-                    'Pose tes questions et reçois des explications instantanées.',
+                    'L\'Assistant IA analyse tes sujets et t\'aide à comprendre chaque étape.',
                     textAlign: TextAlign.center,
                     style: AppTextStyles.bodySmall,
                   ),
                   SizedBox(height: AppSpacing.md),
                   AppPrimaryButton(
-                    text: 'Lancer l\'assistant',
-                    onPressed: () {},
+                    text: 'Demander à l\'IA',
+                    onPressed: () => context.push('/ai'),
                     icon: Icons.chat_bubble_outline,
                     backgroundColor: AppColors.aiAccent,
                   ),
@@ -212,14 +179,6 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      bottomNavigationBar: AppBottomNavigation(
-        currentIndex: _navIndex,
-        onItemSelected: (index) {
-          setState(() {
-            _navIndex = index;
-          });
-        },
-      ),
     );
   }
 }
@@ -229,110 +188,96 @@ class _SubjectCard extends StatelessWidget {
   final Color color;
   final IconData icon;
   final Color iconColor;
+  final VoidCallback onTap;
 
   const _SubjectCard({
     required this.title,
     required this.color,
     required this.icon,
     required this.iconColor,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 90,
-      margin: EdgeInsets.only(right: AppSpacing.sm),
-      child: AppCardPremium(
-        padding: EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 100,
+        margin: EdgeInsets.only(right: AppSpacing.sm),
+        child: AppCardPremium(
+          padding: EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: iconColor, size: 24),
               ),
-              child: Icon(icon, color: iconColor, size: 24),
-            ),
-            SizedBox(height: AppSpacing.sm),
-            Text(
-              title,
-              style: AppTextStyles.titleSmall,
-              textAlign: TextAlign.center,
-            ),
-          ],
+              SizedBox(height: AppSpacing.sm),
+              Text(
+                title,
+                style: AppTextStyles.titleSmall,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _RecentExerciseItem extends StatelessWidget {
-  final String title;
+class _RecentSubjectItem extends StatelessWidget {
   final String subject;
-  final double progress;
+  final String year;
+  final String series;
+  final bool hasCorrection;
+  final VoidCallback onTap;
 
-  const _RecentExerciseItem({
-    required this.title,
+  const _RecentSubjectItem({
     required this.subject,
-    required this.progress,
+    required this.year,
+    required this.series,
+    required this.hasCorrection,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return AppCardPremium(
-      onTap: () {},
+      onTap: onTap,
       child: Row(
         children: [
-          const Icon(Icons.book_outlined, color: AppColors.textSecondary),
+          const Icon(Icons.description_outlined, color: AppColors.primary),
           SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: AppTextStyles.titleSmall),
-                Text(subject, style: AppTextStyles.bodySmall),
+                Text(subject, style: AppTextStyles.titleSmall),
+                SizedBox(height: 2),
+                Text(
+                  '$year • $series',
+                  style: AppTextStyles.bodySmall,
+                ),
               ],
             ),
           ),
-          SizedBox(
-            width: 60,
-            child: AppProgressIndicator(
-              label: '',
-              progress: progress,
-              color: AppColors.primary,
+          if (hasCorrection)
+            const Padding(
+              padding: EdgeInsets.only(right: AppSpacing.md),
+              child: Icon(Icons.check_circle_outline, color: Colors.green, size: 20),
             ),
-          ),
-          SizedBox(width: AppSpacing.sm),
           const Icon(Icons.chevron_right, color: AppColors.outline),
         ],
       ),
-    );
-  }
-}
-
-class _StatItem extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _StatItem({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: AppTextStyles.titleMedium,
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          label,
-          style: AppTextStyles.bodySmall,
-          textAlign: TextAlign.center,
-        ),
-      ],
     );
   }
 }

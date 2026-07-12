@@ -46,18 +46,25 @@ class _SplashPageState extends ConsumerState<SplashPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 120,
-              height: 120,
+              width: 140,
+              height: 140,
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
-               child: Image.asset(
-                 'assets/branding/app_icon.jpg',
-                 width: 80,
-                 height: 80,
-               ),
-
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/branding/app_icon.jpg',
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
             SizedBox(height: AppSpacing.lg),
             Text(

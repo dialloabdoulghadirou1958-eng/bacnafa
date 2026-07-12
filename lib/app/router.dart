@@ -6,9 +6,11 @@ import 'package:bac_nafa/features/subjects/presentation/pages/subjects_page.dart
 import 'package:bac_nafa/features/subjects/presentation/pages/series_page.dart';
 import 'package:bac_nafa/features/subjects/presentation/pages/years_page.dart';
 import 'package:bac_nafa/features/subjects/presentation/pages/exam_papers_page.dart';
-import 'package:bac_nafa/features/subjects/presentation/pages/exam_paper_detail_page.dart';
+import 'package:bac_nafa/features/exam_viewer/presentation/pages/exam_viewer_page.dart';
+import 'package:bac_nafa/features/library/presentation/pages/library_page.dart';
 import 'package:bac_nafa/features/ai_assistant/presentation/pages/ai_chat_page.dart';
-import 'package:bac_nafa/features/profile/presentation/pages/profile_page.dart';
+import 'package:bac_nafa/features/ai_assistant/presentation/pages/ai_history_page.dart';
+import 'package:bac_nafa/features/profile/presentation/pages/profile_screen.dart';
 import 'package:bac_nafa/features/onboarding/presentation/pages/splash_page.dart';
 import 'package:bac_nafa/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:bac_nafa/features/auth/presentation/pages/login_page.dart';
@@ -60,15 +62,26 @@ final goRouter = GoRouter(
         ),
         GoRoute(
           path: '/exam/:id',
-          builder: (context, state) => const ExamPaperDetailPage(),
+          builder: (context, state) {
+            final id = state.pathParameters['id'] ?? '';
+            return ExamViewerPage(examId: id);
+          },
+        ),
+        GoRoute(
+          path: '/library',
+          builder: (context, state) => const LibraryPage(),
         ),
         GoRoute(
           path: '/ai',
           builder: (context, state) => const AIChatPage(),
         ),
         GoRoute(
+          path: '/assistant/history',
+          builder: (context, state) => const AIHistoryPage(),
+        ),
+        GoRoute(
           path: '/profile',
-          builder: (context, state) => const ProfilePage(),
+          builder: (context, state) => const ProfileScreen(),
         ),
       ],
     ),

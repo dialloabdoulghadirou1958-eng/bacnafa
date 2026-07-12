@@ -51,16 +51,16 @@ class AppBottomNavigation extends StatelessWidget {
                 activeIcon: Icon(Icons.home_rounded),
                 label: 'Accueil',
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.menu_book_rounded),
-                activeIcon: Icon(Icons.menu_book_rounded),
-                label: 'Matières',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.auto_awesome),
-                activeIcon: Icon(Icons.auto_awesome),
-                label: 'IA',
-              ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.menu_book_rounded),
+                  activeIcon: Icon(Icons.menu_book_rounded),
+                  label: 'Sujets',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.auto_awesome),
+                  activeIcon: Icon(Icons.auto_awesome),
+                  label: 'Assistant',
+                ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person_rounded),
                 activeIcon: Icon(Icons.person_rounded),
