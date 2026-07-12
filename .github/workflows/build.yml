@@ -1,0 +1,112 @@
+name: Build BacNafa Optimized APK
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Récupération du code source
+      - name: Checkout du code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      # 2. Configuration de l'environnement Java JDK 17
+      - name: Configuration de Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # 3. Configuration du SDK Flutter officiel
+      - name: Configuration de Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Installer Android SDKs pour les plugins
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-31" "platforms;android-32" "platforms;android-33" "platforms;android-34" "build-tools;31.0.0" "build-tools;33.0.2" "build-tools;34.0.0" "cmake;3.22.1" "ndk;25.1.8937393" || true
+
+      - name: Générer les fichiers natifs manquants
+        run: |
+          flutter create .
+
+      # 4. Installer les dépendances Flutter
+      - name: Installer les dépendances Flutter
+        run: |
+          flutter pub get
+
+      - name: Configuration des permissions Android et correction JCenter
+        run: |
+          # Ajouter les permissions au-dessus de la balise <application>
+          sed -i '/<application/i \    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.BLUETOOTH" />' android/app/src/main/AndroidManifest.xml
+          
+          # Assurer que minSdkVersion est 21
+          if [ -f android/app/build.gradle ]; then
+            sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/g' android/app/build.gradle
+            sed -i 's/minSdkVersion = flutter.minSdkVersion/minSdkVersion = 21/g' android/app/build.gradle
+            sed -i 's/minSdk = flutter.minSdkVersion/minSdk = 21/g' android/app/build.gradle
+            sed -i 's/minSdk flutter.minSdkVersion/minSdk 21/g' android/app/build.gradle
+          fi
+          if [ -f android/app/build.gradle.kts ]; then
+            sed -i 's/minSdkVersion = flutter.minSdkVersion/minSdkVersion = 21/g' android/app/build.gradle.kts
+            sed -i 's/minSdkVersion = flutter.minSdkVersion.get()/minSdkVersion = 21/g' android/app/build.gradle.kts
+            sed -i 's/minSdk = flutter.minSdkVersion/minSdk = 21/g' android/app/build.gradle.kts
+            sed -i 's/minSdk = flutter.minSdkVersion.get()/minSdk = 21/g' android/app/build.gradle.kts
+          fi
+          
+          # Correction du bug jcenter() dans les dépendances en cache
+          find /home/runner/.pub-cache/ -name "build.gradle" -exec sed -i 's/jcenter()/mavenCentral()/g' {} +
+          find /home/runner/.pub-cache/ -name "build.gradle.kts" -exec sed -i 's/jcenter()/mavenCentral()/g' {} +
+          
+          # Fix NPE in speech_to_text or old plugins
+          mkdir -p android/app
+          echo "android.builder.sdkDownload=false" >> android/gradle.properties
+          echo "android.nonTransitiveRClass=false" >> android/gradle.properties
+
+      # 5. Compilation ciblée pour l'architecture ARM 64-bit (APK plus léger)
+      - name: Compilation de l'APK spécifique (ARM64)
+        run: |
+          flutter build apk --release --target-platform android-arm64
+
+      # 6. Alignement et signature sous le nom "BacNafa.apk"
+      - name: Signature manuelle et renommage
+        run: |
+          echo "=== Configuration des outils Android ==="
+          BUILD_TOOLS_DIR=$(ls -d ${ANDROID_HOME}/build-tools/* | tail -n 1)
+          export PATH=$PATH:$BUILD_TOOLS_DIR
+          echo "Utilisation des outils dans : $BUILD_TOOLS_DIR"
+          
+          echo "=== Génération de la clé de débogage temporaire ==="
+          keytool -genkey -v -keystore debug.keystore -storepass android \
+            -alias androiddebugkey -keypass android -keyalg RSA \
+            -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          
+          echo "=== Alignement de l'APK Flutter ==="
+          APK_RAW=$(find build/app/outputs/flutter-apk/ -name "*release*.apk" -type f | head -n 1)
+          echo "APK brut trouvé : $APK_RAW"
+          zipalign -v 4 "$APK_RAW" aligned.apk
+          
+          echo "=== Signature et renommage en BacNafa.apk ==="
+          apksigner sign --ks debug.keystore --ks-pass pass:android \
+            --key-pass pass:android --out "BacNafa.apk" aligned.apk
+            
+          echo "=== Vérification finale ==="
+          apksigner verify "BacNafa.apk"
+
+      # 7. Extraction de l'APK final prêt à installer
+      - name: Téléverser l'APK BacNafa
+        uses: actions/upload-artifact@v4
+        with:
+          name: BacNafa-ARM64-APK
+          path: 'BacNafa.apk'
+          if-no-files-found: error
