@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/app/theme/app_text_styles.dart';
 import 'package:bac_nafa/core/design/app_spacing.dart';
+import 'package:bac_nafa/features/auth/providers/auth_provider.dart';
 import 'package:bac_nafa/features/onboarding/providers/onboarding_provider.dart';
 
 class SplashPage extends ConsumerStatefulWidget {
@@ -25,11 +26,11 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     if (!mounted) return;
     
     final isFirstLaunch = ref.read(isFirstLaunchProvider);
-    final isAuthenticated = ref.read(authStateProvider);
+    final authStatus = ref.read(authProvider);
 
     if (isFirstLaunch) {
       context.go('/onboarding');
-    } else if (isAuthenticated) {
+    } else if (authStatus == AuthStatus.authenticated) {
       context.go('/home');
     } else {
       context.go('/login');
@@ -51,11 +52,12 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                 color: Colors.white,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.school,
-                size: 60,
-                color: AppColors.primary,
-              ),
+               child: Image.asset(
+                 'assets/branding/app_icon.jpg',
+                 width: 80,
+                 height: 80,
+               ),
+
             ),
             SizedBox(height: AppSpacing.lg),
             Text(

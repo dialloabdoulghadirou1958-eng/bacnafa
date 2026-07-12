@@ -23,44 +23,62 @@ class SelectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AppCardPremium(
-        padding: EdgeInsets.all(AppSpacing.md),
-        shadows: isSelected ? [
-          BoxShadow(
-            color: (color ?? AppColors.primary).withValues(alpha: 0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          )
-        ] : null,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppRadius.medium),
-            border: Border.all(
-              color: isSelected ? (color ?? AppColors.primary) : AppColors.outline,
-              width: isSelected ? 2 : 1,
+    final activeColor = color ?? AppColors.primary;
+
+    return AnimatedScale(
+      scale: isSelected ? 1.02 : 1.0,
+      duration: const Duration(milliseconds: 200),
+      child: GestureDetector(
+        onTap: onTap,
+        child: AppCardPremium(
+          padding: EdgeInsets.zero,
+          shadows: isSelected ? [
+            BoxShadow(
+              color: activeColor.withValues(alpha: 0.2),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            )
+          ] : null,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppRadius.large),
+              border: Border.all(
+                color: isSelected ? activeColor : AppColors.outline,
+                width: isSelected ? 2 : 1,
+              ),
             ),
-          ),
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              if (icon != null) ...[
-                Icon(icon, color: isSelected ? (color ?? AppColors.primary) : AppColors.textSecondary, size: 24),
-                SizedBox(width: AppSpacing.md),
-              ],
-              Expanded(
-                child: Text(
-                  title,
-                  style: AppTextStyles.titleSmall.copyWith(
-                    color: isSelected ? (color ?? AppColors.primary) : AppColors.textPrimary,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            padding: EdgeInsets.all(AppSpacing.md),
+            child: Row(
+              children: [
+                if (icon != null) ...[
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: isSelected ? activeColor.withValues(alpha: 0.1) : AppColors.background,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      icon,
+                      color: isSelected ? activeColor : AppColors.textSecondary,
+                      size: 22,
+                    ),
+                  ),
+                  SizedBox(width: AppSpacing.md),
+                ],
+                Expanded(
+                  child: Text(
+                    title,
+                    style: AppTextStyles.titleSmall.copyWith(
+                      color: isSelected ? AppColors.textPrimary : AppColors.textPrimary,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    ),
                   ),
                 ),
-              ),
-              if (isSelected)
-                Icon(Icons.check_circle, color: (color ?? AppColors.primary), size: 20),
-            ],
+                if (isSelected)
+                  Icon(Icons.check_circle, color: activeColor, size: 22),
+              ],
+            ),
           ),
         ),
       ),

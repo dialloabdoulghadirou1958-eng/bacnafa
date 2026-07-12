@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:bac_nafa/app/main_scaffold.dart';
 import 'package:bac_nafa/features/home/presentation/pages/home_page.dart';
 import 'package:bac_nafa/features/subjects/presentation/pages/subjects_page.dart';
+import 'package:bac_nafa/features/subjects/presentation/pages/series_page.dart';
+import 'package:bac_nafa/features/subjects/presentation/pages/years_page.dart';
+import 'package:bac_nafa/features/subjects/presentation/pages/exam_papers_page.dart';
+import 'package:bac_nafa/features/subjects/presentation/pages/exam_paper_detail_page.dart';
 import 'package:bac_nafa/features/ai_assistant/presentation/pages/ai_chat_page.dart';
 import 'package:bac_nafa/features/profile/presentation/pages/profile_page.dart';
 import 'package:bac_nafa/features/onboarding/presentation/pages/splash_page.dart';
@@ -41,6 +45,22 @@ final goRouter = GoRouter(
         GoRoute(
           path: '/subjects',
           builder: (context, state) => const SubjectsPage(),
+        ),
+        GoRoute(
+          path: '/subjects/:subjectId/series',
+          builder: (context, state) => const SeriesPage(),
+        ),
+        GoRoute(
+          path: '/subjects/:subjectId/series/:seriesId/years',
+          builder: (context, state) => const YearsPage(),
+        ),
+        GoRoute(
+          path: '/exams',
+          builder: (context, state) => const ExamPapersPage(),
+        ),
+        GoRoute(
+          path: '/exam/:id',
+          builder: (context, state) => const ExamPaperDetailPage(),
         ),
         GoRoute(
           path: '/ai',

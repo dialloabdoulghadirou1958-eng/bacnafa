@@ -24,18 +24,8 @@ final onboardingProvider = NotifierProvider<OnboardingNotifier, OnboardingData>(
   return OnboardingNotifier();
 });
 
-class AuthStateNotifier extends Notifier<bool> {
-  @override
-  bool build() => false;
-
-  void setAuthenticated(bool value) => state = value;
-}
-
-final authStateProvider = NotifierProvider<AuthStateNotifier, bool>(() {
-  return AuthStateNotifier();
-});
-
 class FirstLaunchNotifier extends Notifier<bool> {
+
   @override
   bool build() => true;
 

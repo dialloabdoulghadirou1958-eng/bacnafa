@@ -7,6 +7,8 @@ import 'package:bac_nafa/core/widgets/app_card_premium.dart';
 import 'package:bac_nafa/core/widgets/app_section_title.dart';
 import 'package:bac_nafa/core/widgets/app_progress_indicator.dart';
 import 'package:bac_nafa/core/providers/mock_providers.dart';
+import 'package:bac_nafa/features/auth/providers/auth_provider.dart';
+import 'package:go_router/go_router.dart';
 
 
 class ProfilePage extends ConsumerWidget {
@@ -93,9 +95,19 @@ class ProfilePage extends ConsumerWidget {
                   const Divider(height: 24),
                   _SettingItem(icon: Icons.lock, title: 'Sécurité'),
                   const Divider(height: 24),
-                  _SettingItem(icon: Icons.help_outline, title: 'Aide & Support'),
-                ],
-              ),
+                   _SettingItem(icon: Icons.help_outline, title: 'Aide & Support'),
+                   const Divider(height: 24),
+                   ListTile(
+                     contentPadding: EdgeInsets.zero,
+                     leading: const Icon(Icons.logout, color: Colors.red),
+                     title: Text('Se déconnecter', style: AppTextStyles.bodyLarge.copyWith(color: Colors.red)),
+                     onTap: () {
+                       ref.read(authProvider.notifier).logout();
+                       context.go('/login');
+                     },
+                   ),
+                 ],
+               ),
             ),
           ],
         ),

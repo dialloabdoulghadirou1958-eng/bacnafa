@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/core/design/app_spacing.dart';
 

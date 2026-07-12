@@ -5,12 +5,15 @@ import 'package:bac_nafa/app/theme/app_text_styles.dart';
 import 'package:bac_nafa/core/design/app_spacing.dart';
 import 'package:bac_nafa/core/widgets/app_primary_button.dart';
 import 'package:bac_nafa/core/widgets/app_text_field.dart';
+import 'package:bac_nafa/features/auth/providers/auth_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class RegisterPage extends ConsumerWidget {
   const RegisterPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authStatus = ref.watch(authProvider);
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -67,12 +70,21 @@ class RegisterPage extends ConsumerWidget {
             SizedBox(height: AppSpacing.xl),
             AppPrimaryButton(
               text: 'S\'inscrire',
-              onPressed: () {},
+              onPressed: authStatus == AuthStatus.loading
+                  ? null
+                  : () async {
+                      await ref.read(authProvider.notifier).registerMock();
+                      if (context.mounted) {
+                        context.go('/home');
+                      }
+                    },
             ),
             SizedBox(height: AppSpacing.md),
             Center(
               child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  context.push('/login');
+                },
                 child: Text(
                   'Déjà un compte ? Connecte-toi',
                   style: AppTextStyles.bodyMedium.copyWith(color: AppColors.primary),
