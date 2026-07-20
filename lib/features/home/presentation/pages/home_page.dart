@@ -69,6 +69,18 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: AppSpacing.xl),
 
             const AppSectionTitle(
+              title: 'Quiz',
+              subtitle: 'Test your knowledge',
+            ),
+            SizedBox(height: AppSpacing.sm),
+            AppPrimaryButton(
+              text: 'Start Math Quiz',
+              onPressed: () => context.push('/quiz/1'),
+              icon: Icons.quiz,
+              backgroundColor: AppColors.primary,
+            ),
+            SizedBox(height: AppSpacing.xl),
+            const AppSectionTitle(
               title: 'Explorer les sujets',
               subtitle: 'Trouve rapidement tes épreuves',
               action: Text(

@@ -15,6 +15,10 @@ import 'package:bac_nafa/features/onboarding/presentation/pages/splash_page.dart
 import 'package:bac_nafa/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:bac_nafa/features/auth/presentation/pages/login_page.dart';
 import 'package:bac_nafa/features/auth/presentation/pages/register_page.dart';
+import 'package:bac_nafa/features/quiz/presentation/pages/quiz_page.dart';
+import 'package:bac_nafa/features/quiz/domain/models/quiz_models.dart';
+import 'package:bac_nafa/features/quiz/data/mock_quiz_repository.dart';
+
 
 final goRouter = GoRouter(
   initialLocation: '/splash',
@@ -78,6 +82,29 @@ final goRouter = GoRouter(
         GoRoute(
           path: '/assistant/history',
           builder: (context, state) => const AIHistoryPage(),
+        ),
+        GoRoute(
+          path: '/quiz/:id',
+          builder: (context, state) {
+            // For now, hardcode the quiz data
+            final quiz = Quiz(
+              id: '1',
+              title: 'Math Quiz',
+              description: 'Basic math',
+              questions: [
+                Question(
+                  id: 'q1',
+                  text: 'What is 2 + 2?',
+                  options: [
+                    Option(id: 'o1', text: '3', isCorrect: false),
+                    Option(id: 'o2', text: '4', isCorrect: true),
+                    Option(id: 'o3', text: '5', isCorrect: false),
+                  ],
+                ),
+              ],
+            );
+            return QuizPage(quiz: quiz);
+          },
         ),
         GoRoute(
           path: '/profile',

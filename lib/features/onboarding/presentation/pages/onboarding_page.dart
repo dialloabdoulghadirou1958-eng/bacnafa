@@ -40,40 +40,51 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            Expanded(
-              child: PageView(
-                controller: _pageController,
-                onPageChanged: (index) {
-                  setState(() => _currentPage = index);
-                },
-                children: [
-                  _buildPage1(),
-                  _buildPage2(onboardingData),
-                  _buildPage3(onboardingData),
-                  _buildPage4(onboardingData),
-                ],
-              ),
+            PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() => _currentPage = index);
+              },
+              children: [
+                _buildPage1(),
+                _buildPage2(onboardingData),
+                _buildPage3(onboardingData),
+                _buildPage4(onboardingData),
+              ],
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.lg,
-                vertical: AppSpacing.xl,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  OnboardingIndicator(currentIndex: _currentPage, totalPages: 4),
-                  SizedBox(height: AppSpacing.xl),
-                  SizedBox(
-                    width: double.infinity,
-                    child: AppPrimaryButton(
-                      text: _currentPage == 3 ? 'Commencer' : 'Suivant',
-                      onPressed: _nextPage,
-                    ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      AppColors.background.withValues(alpha: 0),
+                      AppColors.background.withValues(alpha: 0.9),
+                    ],
                   ),
-                ],
+                ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.xl,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    OnboardingIndicator(currentIndex: _currentPage, totalPages: 4),
+                    SizedBox(height: AppSpacing.xl),
+                    SizedBox(
+                      width: double.infinity,
+                      child: AppPrimaryButton(
+                        text: _currentPage == 3 ? 'Commencer' : 'Suivant',
+                        onPressed: _nextPage,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -86,63 +97,57 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Spacer(),
           const IllustrationCircle(
-            label: 'Apprentissage Intelligent',
+            label: 'Apprentissage',
             icon: Icons.auto_awesome,
             color: AppColors.primary,
           ),
-          SizedBox(height: AppSpacing.xxl),
+          SizedBox(height: AppSpacing.lg),
           Text(
-            'Prépare ton Bac intelligemment',
+            'Prépare ton Bac',
             textAlign: TextAlign.center,
             style: AppTextStyles.displayMedium,
           ),
-          SizedBox(height: AppSpacing.md),
-            Text(
-              'BacNafa est ton hub intelligent de sujets et corrections pour réussir ton examen avec confiance.',
-              textAlign: TextAlign.center,
-              style: AppTextStyles.bodyMedium,
-            ),
-          const Spacer(),
+          SizedBox(height: AppSpacing.sm),
+          Text(
+            'BacNafa est ton hub intelligent de sujets et corrections pour réussir ton examen.',
+            textAlign: TextAlign.center,
+            style: AppTextStyles.bodyMedium,
+          ),
         ],
       ),
     );
   }
 
   Widget _buildPage2(OnboardingData data) {
-    final classes = ['Terminale', 'Première', 'Seconde'];
+    final classes = ['Terminale'];
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: Column(
         children: [
-          const Spacer(),
+          SizedBox(height: AppSpacing.lg),
           const IllustrationCircle(
-            label: 'Ton Parcours',
+            label: 'Parcours',
             icon: Icons.map,
             color: AppColors.secondary,
           ),
-          SizedBox(height: AppSpacing.xxl),
+          SizedBox(height: AppSpacing.md),
           Text(
-            'Choisis ton parcours',
+            'Ton niveau',
             textAlign: TextAlign.center,
-            style: AppTextStyles.displayMedium,
+            style: AppTextStyles.headlineSmall,
           ),
-          SizedBox(height: AppSpacing.lg),
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: classes.map((c) => Padding(
-                padding: EdgeInsets.only(bottom: AppSpacing.sm),
-                child: SelectionCard(
-                  title: c,
-                  isSelected: data.selectedClass == c,
-                  onTap: () => ref.read(onboardingProvider.notifier).updateClass(c),
-                ),
-              )).toList(),
+          SizedBox(height: AppSpacing.md),
+          ...classes.map((c) => Padding(
+            padding: EdgeInsets.only(bottom: AppSpacing.sm),
+            child: SelectionCard(
+              title: c,
+              isSelected: data.selectedClass == c,
+              onTap: () => ref.read(onboardingProvider.notifier).updateClass(c),
             ),
-          ),
+          )).toList(),
         ],
       ),
     );
@@ -158,33 +163,28 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: Column(
         children: [
-          const Spacer(),
+          SizedBox(height: AppSpacing.lg),
           const IllustrationCircle(
-            label: 'Ta Série',
+            label: 'Série',
             icon: Icons.category,
             color: AppColors.aiAccent,
           ),
-          SizedBox(height: AppSpacing.xxl),
+          SizedBox(height: AppSpacing.md),
           Text(
-            'Quelle est ta série ?',
+            'Ta série',
             textAlign: TextAlign.center,
-            style: AppTextStyles.displayMedium,
+            style: AppTextStyles.headlineSmall,
           ),
-          SizedBox(height: AppSpacing.lg),
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: series.map((s) => Padding(
-                padding: EdgeInsets.only(bottom: AppSpacing.sm),
-                child: SelectionCard(
-                  title: s['name'] as String,
-                  icon: s['icon'] as IconData,
-                  isSelected: data.selectedSeries == s['name'],
-                  onTap: () => ref.read(onboardingProvider.notifier).updateSeries(s['name'] as String),
-                ),
-              )).toList(),
+          SizedBox(height: AppSpacing.md),
+          ...series.map((s) => Padding(
+            padding: EdgeInsets.only(bottom: AppSpacing.sm),
+            child: SelectionCard(
+              title: s['name'] as String,
+              icon: s['icon'] as IconData,
+              isSelected: data.selectedSeries == s['name'],
+              onTap: () => ref.read(onboardingProvider.notifier).updateSeries(s['name'] as String),
             ),
-          ),
+          )).toList(),
         ],
       ),
     );
@@ -201,40 +201,35 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: Column(
         children: [
-          const Spacer(),
+          SizedBox(height: AppSpacing.lg),
           const IllustrationCircle(
-            label: 'Tes Objectifs',
+            label: 'Objectifs',
             icon: Icons.flag,
             color: Colors.green,
           ),
-          SizedBox(height: AppSpacing.xxl),
+          SizedBox(height: AppSpacing.md),
           Text(
-            'Quel est ton objectif ?',
+            'Tes objectifs',
             textAlign: TextAlign.center,
-            style: AppTextStyles.displayMedium,
+            style: AppTextStyles.headlineSmall,
           ),
-          SizedBox(height: AppSpacing.lg),
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: goals.map((g) => Padding(
-                padding: EdgeInsets.only(bottom: AppSpacing.sm),
-                child: SelectionCard(
-                  title: g,
-                  isSelected: data.selectedGoals.contains(g),
-                  onTap: () {
-                    final currentGoals = Set<String>.from(data.selectedGoals);
-                    if (currentGoals.contains(g)) {
-                      currentGoals.remove(g);
-                    } else {
-                      currentGoals.add(g);
-                    }
-                    ref.read(onboardingProvider.notifier).updateGoals(currentGoals.toList());
-                  },
-                ),
-              )).toList(),
+          SizedBox(height: AppSpacing.md),
+          ...goals.map((g) => Padding(
+            padding: EdgeInsets.only(bottom: AppSpacing.sm),
+            child: SelectionCard(
+              title: g,
+              isSelected: data.selectedGoals.contains(g),
+              onTap: () {
+                final currentGoals = Set<String>.from(data.selectedGoals);
+                if (currentGoals.contains(g)) {
+                  currentGoals.remove(g);
+                } else {
+                  currentGoals.add(g);
+                }
+                ref.read(onboardingProvider.notifier).updateGoals(currentGoals.toList());
+              },
             ),
-          ),
+          )).toList(),
         ],
       ),
     );
