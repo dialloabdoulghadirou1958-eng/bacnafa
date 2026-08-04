@@ -9,7 +9,7 @@ import 'package:bac_nafa/core/design/app_spacing.dart';
 import 'package:bac_nafa/core/widgets/app_primary_button.dart';
 import 'package:bac_nafa/core/widgets/app_text_field.dart';
 import 'package:bac_nafa/features/auth/providers/auth_provider.dart';
-import 'package:bac_nafa/features/auth/presentation/widgets/graduation_cap_painter.dart';
+
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -102,11 +102,29 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(height: screenHeight * 0.06),
-                  SizedBox(
-                    height: 110,
-                    child: CustomPaint(
-                      painter: GraduationCapPainter(),
-                      size: const Size(110, 110),
+                  Container(
+                    width: 92,
+                    height: 92,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 3,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF5A54E8).withValues(alpha: 0.3),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(21),
+                      child: Image.asset(
+                        'assets/branding/app_icon.jpg',
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -212,6 +230,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   const SizedBox(height: 28),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
                         'Pas encore de compte ? ',
@@ -221,7 +240,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       ),
                       GestureDetector(
                         behavior: HitTestBehavior.opaque,
-                        onTap: () => context.push('/register'),
+                        onTap: () => context.go('/register'),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           child: Text(
