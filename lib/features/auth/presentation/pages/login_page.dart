@@ -5,9 +5,11 @@ import 'package:bac_nafa/app/routes.dart';
 import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/app/theme/app_text_styles.dart';
 import 'package:bac_nafa/core/design/app_radius.dart';
+import 'package:bac_nafa/core/design/app_spacing.dart';
 import 'package:bac_nafa/core/widgets/app_primary_button.dart';
 import 'package:bac_nafa/core/widgets/app_text_field.dart';
 import 'package:bac_nafa/features/auth/providers/auth_provider.dart';
+import 'package:bac_nafa/features/auth/presentation/widgets/graduation_cap_painter.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -16,33 +18,12 @@ class LoginPage extends ConsumerStatefulWidget {
   ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends ConsumerState<LoginPage>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _slide;
-  late final Animation<double> _fade;
+class _LoginPageState extends ConsumerState<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
-    _slide = Tween<double>(begin: 30, end: 0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
-    _fade = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
-    _controller.forward();
-  }
-
-  @override
   void dispose() {
-    _controller.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -52,6 +33,8 @@ class _LoginPageState extends ConsumerState<LoginPage>
   Widget build(BuildContext context) {
     final authStatus = ref.watch(authProvider);
     final isLoading = authStatus == AuthStatus.loading;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final headerHeight = screenHeight * 0.38;
 
     return Scaffold(
       body: Stack(
@@ -60,38 +43,50 @@ class _LoginPageState extends ConsumerState<LoginPage>
             top: 0,
             left: 0,
             right: 0,
-            height: MediaQuery.of(context).size.height * 0.42,
+            height: headerHeight,
             child: Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [AppColors.primary, AppColors.tertiary],
+                  colors: [Color(0xFF5A54E8), Color(0xFF7F77FF)],
                 ),
               ),
               child: Stack(
                 children: [
                   Positioned(
-                    top: -60,
-                    right: -30,
+                    top: -40,
+                    right: -40,
                     child: Container(
-                      width: 160,
-                      height: 160,
+                      width: 200,
+                      height: 200,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withValues(alpha: 0.08),
+                        color: Colors.white.withValues(alpha: 0.06),
                       ),
                     ),
                   ),
                   Positioned(
-                    bottom: 20,
-                    left: -50,
+                    bottom: -60,
+                    left: -60,
                     child: Container(
-                      width: 120,
-                      height: 120,
+                      width: 180,
+                      height: 180,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withValues(alpha: 0.06),
+                        color: Colors.white.withValues(alpha: 0.04),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: -20,
+                    right: -80,
+                    child: Container(
+                      width: 140,
+                      height: 140,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withValues(alpha: 0.05),
                       ),
                     ),
                   ),
@@ -101,129 +96,148 @@ class _LoginPageState extends ConsumerState<LoginPage>
           ),
           SafeArea(
             child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 24),
-                  TweenAnimationBuilder<double>(
-                    tween: Tween(begin: 0.6, end: 1.0),
-                    duration: const Duration(milliseconds: 700),
-                    curve: Curves.elasticOut,
-                    builder: (context, value, child) {
-                      return Transform.scale(scale: value, child: child);
-                    },
-                    child: Container(
-                      width: 92,
-                      height: 92,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.15),
-                            blurRadius: 24,
-                            offset: const Offset(0, 12),
-                          ),
-                        ],
-                      ),
-                      child: ClipOval(
-                        child: Image.asset('assets/branding/app_icon.jpg', fit: BoxFit.cover),
-                      ),
+                  SizedBox(height: screenHeight * 0.06),
+                  SizedBox(
+                    height: 110,
+                    child: CustomPaint(
+                      painter: GraduationCapPainter(),
+                      size: const Size(110, 110),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   Text(
                     'Bienvenue',
-                    style: AppTextStyles.displayMedium.copyWith(color: Colors.white, fontSize: 30),
+                    style: AppTextStyles.displayMedium.copyWith(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w800,
+                    ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
                   Text(
                     'Connecte-toi pour continuer ton parcours',
-                    style: AppTextStyles.bodyMedium.copyWith(color: Colors.white.withValues(alpha: 0.85)),
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      color: Colors.white.withValues(alpha: 0.85),
+                      fontSize: 15,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 36),
-                  AnimatedBuilder(
-                    animation: _controller,
-                    builder: (context, child) {
-                      return Transform.translate(
-                        offset: Offset(0, _slide.value),
-                        child: Opacity(opacity: _fade.value, child: child),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(AppRadius.card),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.08),
-                            blurRadius: 24,
-                            offset: const Offset(0, 12),
+                  Container(
+                    padding: const EdgeInsets.all(28),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(AppRadius.card),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 30,
+                          offset: const Offset(0, 16),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Connexion',
+                          style: AppTextStyles.headlineSmall.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w700,
                           ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text('Connexion', style: AppTextStyles.headlineSmall),
-                          const SizedBox(height: 4),
-                          Text('Saisis tes identifiants', style: AppTextStyles.bodyMedium),
-                          const SizedBox(height: 20),
-                          AppTextField(
-                            label: 'Email ou Téléphone',
-                            hintText: 'exemple@mail.com',
-                            prefixIcon: Icons.email_outlined,
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Saisis tes identifiants',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: AppColors.textSecondary,
                           ),
-                          const SizedBox(height: 16),
-                          AppTextField(
-                            label: 'Mot de passe',
-                            hintText: '••••••••',
-                            prefixIcon: Icons.lock_outline,
-                            isPassword: true,
-                            controller: _passwordController,
-                          ),
-                          const SizedBox(height: 12),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {},
-                              style: TextButton.styleFrom(foregroundColor: AppColors.primary),
-                              child: const Text('Mot de passe oublié ?'),
+                        ),
+                        const SizedBox(height: 24),
+                        AppTextField(
+                          label: 'Email ou Téléphone',
+                          hintText: 'exemple@mail.com',
+                          prefixIcon: Icons.email_outlined,
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                        const SizedBox(height: 18),
+                        AppTextField(
+                          label: 'Mot de passe',
+                          hintText: '••••••••',
+                          prefixIcon: Icons.lock_outline,
+                          isPassword: true,
+                          controller: _passwordController,
+                        ),
+                        const SizedBox(height: 14),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {},
+                            style: TextButton.styleFrom(
+                              foregroundColor: const Color(0xFF7C3AED),
+                              padding: EdgeInsets.zero,
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: Text(
+                              'Mot de passe oublié ?',
+                              style: AppTextStyles.labelLarge.copyWith(
+                                color: const Color(0xFF7C3AED),
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          AppPrimaryButton(
-                            text: isLoading ? 'Connexion…' : 'Se connecter',
-                            isLoading: isLoading,
-                            onPressed: isLoading
-                                ? null
-                                : () async {
-                                    await ref.read(authProvider.notifier).loginMock();
-                                    if (context.mounted) context.go(AppRoutes.home);
-                                  },
-                          ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 20),
+                        AppPrimaryButton(
+                          text: isLoading ? 'Connexion…' : 'Se connecter',
+                          isLoading: isLoading,
+                          backgroundColor: const Color(0xFF5A54E8),
+                          onPressed: isLoading
+                              ? null
+                              : () async {
+                                  await ref.read(authProvider.notifier).loginMock();
+                                  if (context.mounted) context.go(AppRoutes.home);
+                                },
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 28),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Pas encore de compte ?', style: AppTextStyles.bodyMedium),
-                      TextButton(
-                        onPressed: () => context.push('/register'),
-                        style: TextButton.styleFrom(foregroundColor: AppColors.primary),
-                        child: const Text('Inscris-toi', style: TextStyle(fontWeight: FontWeight.w700)),
+                      Text(
+                        'Pas encore de compte ? ',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: Colors.white.withValues(alpha: 0.9),
+                        ),
+                      ),
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => context.push('/register'),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            "S'inscrire",
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.white.withValues(alpha: 0.6),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
+                  SizedBox(height: screenHeight * 0.06),
                 ],
               ),
             ),

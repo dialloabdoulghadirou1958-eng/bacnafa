@@ -53,22 +53,35 @@ class _AppTextFieldState extends State<AppTextField> {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = _hasFocus ? AppColors.primary : AppColors.outlineVariant;
-    final fillColor = _hasFocus ? AppColors.primaryContainer.withValues(alpha: 0.2) : AppColors.surfaceContainerHighest;
+    final accentColor = const Color(0xFF5A54E8);
+    final borderColor = _hasFocus ? accentColor : AppColors.outlineVariant;
+    final borderWidth = _hasFocus ? 1.5 : 1.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           widget.label,
-          style: AppTextStyles.labelLarge.copyWith(color: _hasFocus ? AppColors.primary : AppColors.textSecondary),
+          style: AppTextStyles.labelLarge.copyWith(
+            color: _hasFocus ? accentColor : AppColors.textSecondary,
+          ),
         ),
         SizedBox(height: AppSpacing.xs),
         AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppRadius.button),
-            border: Border.all(color: borderColor, width: _hasFocus ? 1.5 : 1),
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(AppRadius.medium),
+            border: Border.all(color: borderColor, width: borderWidth),
+            boxShadow: _hasFocus
+                ? [
+                    BoxShadow(
+                      color: accentColor.withValues(alpha: 0.12),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
           ),
           child: TextField(
             controller: widget.controller,
@@ -88,24 +101,33 @@ class _AppTextFieldState extends State<AppTextField> {
                       padding: const EdgeInsets.only(left: 12, right: 8),
                       child: Icon(
                         widget.prefixIcon,
-                        color: _hasFocus ? AppColors.primary : AppColors.textTertiary,
+                        color: _hasFocus ? accentColor : AppColors.textTertiary,
                         size: 20,
                       ),
                     )
                   : null,
               suffixIcon: widget.suffixIcon,
               filled: true,
-              fillColor: fillColor,
+              fillColor: AppColors.surface,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppRadius.button),
+                borderRadius: BorderRadius.circular(AppRadius.medium),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.medium),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.medium),
                 borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               isDense: false,
             ),
-            style: AppTextStyles.bodyLarge.copyWith(
+            style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 15,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ),
