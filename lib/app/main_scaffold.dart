@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bac_nafa/core/widgets/app_bottom_navigation.dart';
+import 'theme/app_theme.dart';
+import '../../core/widgets/app_bottom_navigation.dart';
 
 class MainScaffold extends ConsumerWidget {
   final Widget child;
@@ -13,28 +15,31 @@ class MainScaffold extends ConsumerWidget {
     final String location = GoRouterState.of(context).uri.toString();
     int navIndex = _computeIndex(location);
 
-    return Scaffold(
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 250),
-        switchInCurve: Curves.easeOutCubic,
-        switchOutCurve: Curves.easeInCubic,
-        transitionBuilder: (child, animation) {
-          return FadeTransition(
-            opacity: animation,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: AppTheme.lightStatusBar,
+      child: Scaffold(
+        body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+          child: KeyedSubtree(
+            key: ValueKey(navIndex),
             child: child,
-          );
-        },
-        child: KeyedSubtree(
-          key: ValueKey(navIndex),
-          child: child,
+          ),
         ),
-      ),
-      bottomNavigationBar: AppBottomNavigation(
-        currentIndex: navIndex,
-        onItemSelected: (index) {
-          final routes = ['/home', '/subjects', '/ai', '/profile'];
-          context.go(routes[index]);
-        },
+        bottomNavigationBar: AppBottomNavigation(
+          currentIndex: navIndex,
+          onItemSelected: (index) {
+            final routes = ['/home', '/subjects', '/ai', '/profile'];
+            context.go(routes[index]);
+          },
+        ),
       ),
     );
   }

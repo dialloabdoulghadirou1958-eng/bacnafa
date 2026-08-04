@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bac_nafa/app/routes.dart';
 import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/app/theme/app_text_styles.dart';
+import 'package:bac_nafa/app/theme/app_theme.dart';
 import 'package:bac_nafa/core/design/app_radius.dart';
-import 'package:bac_nafa/core/design/app_spacing.dart';
 import 'package:bac_nafa/core/widgets/app_primary_button.dart';
 import 'package:bac_nafa/core/widgets/app_text_field.dart';
 import 'package:bac_nafa/features/auth/providers/auth_provider.dart';
@@ -36,9 +37,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final screenHeight = MediaQuery.of(context).size.height;
     final headerHeight = screenHeight * 0.38;
 
-    return Scaffold(
-      body: Stack(
-        children: [
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: AppTheme.lightStatusBar,
+      child: Scaffold(
+        body: Stack(
+          children: [
           Positioned(
             top: 0,
             left: 0,
@@ -102,28 +105,33 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(height: screenHeight * 0.06),
-                  Container(
-                    width: 92,
-                    height: 92,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.3),
-                        width: 3,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF5A54E8).withValues(alpha: 0.3),
-                          blurRadius: 20,
-                          offset: const Offset(0, 8),
+                  Hero(
+                    tag: 'app_icon',
+                    createRectTween: (begin, end) =>
+                        MaterialRectArcTween(begin: begin, end: end),
+                    child: Container(
+                      width: 112,
+                      height: 112,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(28),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.3),
+                          width: 3,
                         ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(21),
-                      child: Image.asset(
-                        'assets/branding/app_icon.jpg',
-                        fit: BoxFit.cover,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF5A54E8).withValues(alpha: 0.3),
+                            blurRadius: 24,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(25),
+                        child: Image.asset(
+                          'assets/branding/app_icon.jpg',
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
@@ -224,45 +232,46 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   if (context.mounted) context.go(AppRoutes.home);
                                 },
                         ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Pas encore de compte ? ',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () => context.go('/register'),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 4),
+                                child: Text(
+                                  "S'inscrire",
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: const Color(0xFF5A54E8),
+                                    fontWeight: FontWeight.w700,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: const Color(0xFF5A54E8).withValues(alpha: 0.6),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 28),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Pas encore de compte ? ',
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: Colors.white.withValues(alpha: 0.9),
-                        ),
-                      ),
-                      GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => context.go('/register'),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: Text(
-                            "S'inscrire",
-                            style: AppTextStyles.bodyMedium.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colors.white.withValues(alpha: 0.6),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: screenHeight * 0.06),
+                  SizedBox(height: screenHeight * 0.04),
                 ],
               ),
             ),
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }

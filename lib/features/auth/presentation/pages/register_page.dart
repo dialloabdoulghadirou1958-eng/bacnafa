@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bac_nafa/app/routes.dart';
 import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/app/theme/app_text_styles.dart';
+import 'package:bac_nafa/app/theme/app_theme.dart';
 import 'package:bac_nafa/core/widgets/app_primary_button.dart';
 import 'package:bac_nafa/core/widgets/app_text_field.dart';
 import 'package:bac_nafa/features/auth/providers/auth_provider.dart';
@@ -54,13 +56,15 @@ class _RegisterPageState extends ConsumerState<RegisterPage>
     final authStatus = ref.watch(authProvider);
     final isLoading = authStatus == AuthStatus.loading;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Inscription'),
-        foregroundColor: AppColors.textPrimary,
-        scrolledUnderElevation: 1,
-      ),
-      body: SingleChildScrollView(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: AppTheme.lightStatusBar,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Inscription'),
+          foregroundColor: AppColors.textPrimary,
+          scrolledUnderElevation: 1,
+        ),
+        body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: FadeTransition(
           opacity: _fade,
@@ -68,36 +72,61 @@ class _RegisterPageState extends ConsumerState<RegisterPage>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [AppColors.primary, AppColors.tertiary],
+              Center(
+                child: Container(
+                  width: 92,
+                  height: 92,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF5A54E8), Color(0xFF7F77FF), Color(0xFFB06BFF)],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF5A54E8).withValues(alpha: 0.35),
+                        blurRadius: 24,
+                        offset: const Offset(0, 10),
                       ),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Icon(Icons.school_rounded, color: Colors.white, size: 30),
+                    ],
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Crée ton compte', style: AppTextStyles.headlineSmall),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Rejoins des milliers d\'élèves',
-                          style: AppTextStyles.bodyMedium,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withValues(alpha: 0.18),
                         ),
-                      ],
-                    ),
+                      ),
+                      const Icon(
+                        Icons.school_rounded,
+                        color: Colors.white,
+                        size: 38,
+                      ),
+                    ],
                   ),
-                ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Crée ton compte',
+                      style: AppTextStyles.headlineSmall,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Rejoins des milliers d\'élèves',
+                      style: AppTextStyles.bodyMedium,
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 24),
               AppTextField(
@@ -148,20 +177,37 @@ class _RegisterPageState extends ConsumerState<RegisterPage>
                         if (context.mounted) context.go(AppRoutes.home);
                       },
               ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Déjà un compte ?', style: AppTextStyles.bodyMedium),
-                  TextButton(
-                    onPressed: () => context.push('/login'),
-                    style: TextButton.styleFrom(foregroundColor: AppColors.primary),
-                    child: const Text('Connecte-toi', style: TextStyle(fontWeight: FontWeight.w700)),
-                  ),
-                ],
+              const SizedBox(height: 28),
+              Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Déjà un compte ? ',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => context.go('/login'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: const Text(
+                        'Connecte-toi',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 24),
-            ],
+              const SizedBox(height: 32),
+],
+            ),
           ),
         ),
       ),

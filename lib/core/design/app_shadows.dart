@@ -8,8 +8,8 @@ class AppShadows {
   static List<BoxShadow> get subtle {
     return [
       BoxShadow(
-        color: const Color(0x080A0F1E),
-        blurRadius: 4,
+        color: const Color(0x140F172A),
+        blurRadius: 6,
         offset: const Offset(0, 2),
       ),
     ];
@@ -18,10 +18,10 @@ class AppShadows {
   static List<BoxShadow> get soft {
     return [
       BoxShadow(
-        color: const Color(0x0D0F172A),
-        blurRadius: 10,
-        offset: const Offset(0, 4),
-        spreadRadius: -2,
+        color: const Color(0x140F172A),
+        blurRadius: 14,
+        offset: const Offset(0, 6),
+        spreadRadius: -3,
       ),
     ];
   }
@@ -29,10 +29,10 @@ class AppShadows {
   static List<BoxShadow> get medium {
     return [
       BoxShadow(
-        color: const Color(0x140F172A),
-        blurRadius: 16,
-        offset: const Offset(0, 8),
-        spreadRadius: -4,
+        color: const Color(0x1A0F172A),
+        blurRadius: 20,
+        offset: const Offset(0, 10),
+        spreadRadius: -5,
       ),
     ];
   }
@@ -40,10 +40,10 @@ class AppShadows {
   static List<BoxShadow> get elevated {
     return [
       BoxShadow(
-        color: const Color(0x1A0F172A),
-        blurRadius: 24,
-        offset: const Offset(0, 12),
-        spreadRadius: -6,
+        color: const Color(0x1F0F172A),
+        blurRadius: 28,
+        offset: const Offset(0, 14),
+        spreadRadius: -7,
       ),
     ];
   }
@@ -51,10 +51,15 @@ class AppShadows {
   static List<BoxShadow> get premium {
     return [
       BoxShadow(
-        color: const Color(0x140F172A),
-        blurRadius: 32,
-        offset: const Offset(0, 16),
-        spreadRadius: -8,
+        color: const Color(0x1A0F172A),
+        blurRadius: 40,
+        offset: const Offset(0, 20),
+        spreadRadius: -10,
+      ),
+      BoxShadow(
+        color: const Color(0x0D0F172A),
+        blurRadius: 8,
+        offset: const Offset(0, 2),
       ),
     ];
   }

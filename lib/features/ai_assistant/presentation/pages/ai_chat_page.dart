@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/app/theme/app_text_styles.dart';
+import 'package:bac_nafa/app/theme/app_theme.dart';
 import 'package:bac_nafa/core/design/app_radius.dart';
 import 'package:bac_nafa/features/ai_assistant/domain/models/chat_models.dart';
 import 'package:bac_nafa/features/ai_assistant/providers/ai_providers.dart';
@@ -95,77 +97,86 @@ class _AIChatPageState extends ConsumerState<AIChatPage> {
     final examContext = ref.watch(examContextProvider);
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Assistant IA'),
-        scrolledUnderElevation: 1,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.history_rounded, size: 22),
-            onPressed: () => context.push('/assistant/history'),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          if (examContext != null)
-            Material(
-              color: AppColors.tertiaryContainer,
-              child: InkWell(
-                onTap: null,
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: AppColors.tertiary.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(Icons.book_rounded, color: AppColors.tertiary, size: 18),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          '${examContext.subjectName} — ${examContext.contentSummary}',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: colorScheme.onTertiaryContainer,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => ref.read(examContextProvider.notifier).set(null),
-                        child: const Padding(
-                          padding: EdgeInsets.all(4),
-                          child: Icon(Icons.close_rounded, size: 20, color: AppColors.tertiary),
-                        ),
-                      ),
-                    ],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: AppTheme.lightStatusBar,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Assistant IA'),
+          scrolledUnderElevation: 1,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.history_rounded, size: 22),
+              onPressed: () => context.push('/assistant/history'),
+            ),
+          ],
+        ),
+        body: Column(
+          children: [
+            if (examContext != null)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColors.tertiaryContainer,
+                  border: Border(
+                    bottom: BorderSide(color: AppColors.borderSubtle, width: 1),
                   ),
                 ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.tertiary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.2), width: 1),
+                      ),
+                      child: const Icon(Icons.book_rounded, color: AppColors.tertiary, size: 18),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        '${examContext.subjectName} — ${examContext.contentSummary}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onTertiaryContainer,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => ref.read(examContextProvider.notifier).set(null),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceContainer,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: AppColors.borderSubtle, width: 1),
+                        ),
+                        child: Icon(Icons.close_rounded, size: 18, color: AppColors.textTertiary),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+            Expanded(
+              child: messages.isEmpty
+                  ? _EmptyChat(
+                      examContext: examContext,
+                      onPrompt: (text) => _sendMessage(text),
+                    )
+                  : ListView.builder(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) => ChatBubble(message: messages[index]),
+                    ),
             ),
-          Expanded(
-            child: messages.isEmpty
-                ? _EmptyChat(
-                    examContext: examContext,
-                    onPrompt: (text) => _sendMessage(text),
-                  )
-                : ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) => ChatBubble(message: messages[index]),
-                  ),
-          ),
-          ChatInput(onSend: _sendMessage),
-        ],
+            ChatInput(onSend: _sendMessage),
+          ],
+        ),
       ),
     );
   }
@@ -193,32 +204,34 @@ class _EmptyChat extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: AppColors.tertiaryContainer,
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.2), width: 1),
               ),
-              child: const Icon(Icons.psychology_rounded, color: AppColors.tertiary, size: 48),
+              child: const Icon(Icons.psychology_rounded, color: AppColors.tertiary, size: 52),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             Text(
               'Tuteur IA Bac',
-              style: AppTextStyles.headlineSmall,
+              style: AppTextStyles.headlineSmall.copyWith(fontWeight: FontWeight.w700),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text(
               'Pose-moi tes questions sur les sujets du Bac et j\'analyse chaque étape avec toi.',
-              style: AppTextStyles.bodyMedium,
+              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
             if (examContext != null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
                   color: AppColors.tertiaryContainer,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.2), width: 1),
                 ),
                 child: Text(
                   'Contexte : ${examContext!.contentSummary}',
@@ -230,18 +243,18 @@ class _EmptyChat extends StatelessWidget {
                 ),
               ),
             ],
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: 10,
+              runSpacing: 10,
               children: suggestions.map((s) {
                 return ActionChip(
-                  label: Text(s, style: const TextStyle(fontSize: 12)),
+                  label: Text(s, style: AppTextStyles.labelSmall),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppRadius.chip),
                   ),
                   backgroundColor: AppColors.surfaceContainerHighest,
-                  side: BorderSide.none,
+                  side: BorderSide(color: AppColors.borderSubtle, width: 1),
                   onPressed: () => onPrompt(s),
                 );
               }).toList(),

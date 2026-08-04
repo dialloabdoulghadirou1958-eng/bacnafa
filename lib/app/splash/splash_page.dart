@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bac_nafa/app/routes.dart';
 import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/app/theme/app_text_styles.dart';
+import 'package:bac_nafa/app/theme/app_theme.dart';
 import 'package:bac_nafa/core/services/auth_actions.dart';
 import 'package:bac_nafa/features/onboarding/providers/onboarding_provider.dart';
 
@@ -64,8 +66,10 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: AppTheme.lightStatusBar,
+      child: Scaffold(
+        body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -107,24 +111,36 @@ class _SplashPageState extends ConsumerState<SplashPage>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
-                        width: 140,
-                        height: 140,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.18),
-                              blurRadius: 30,
-                              offset: const Offset(0, 16),
+                      Hero(
+                        tag: 'app_icon',
+                        flightShuttleBuilder: (flightContext, animation, flightDirection, fromHeroContext, toHeroContext) {
+                          return AnimatedBuilder(
+                            animation: animation,
+                            builder: (context, child) {
+                              return Opacity(opacity: 1.0, child: child);
+                            },
+                            child: toHeroContext.widget,
+                          );
+                        },
+                        child: Container(
+                          width: 140,
+                          height: 140,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.18),
+                                blurRadius: 30,
+                                offset: const Offset(0, 16),
+                              ),
+                            ],
+                          ),
+                          child: ClipOval(
+                            child: Image.asset(
+                              'assets/branding/app_icon.jpg',
+                              fit: BoxFit.cover,
                             ),
-                          ],
-                        ),
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/branding/app_icon.jpg',
-                            fit: BoxFit.cover,
                           ),
                         ),
                       ),
@@ -164,6 +180,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 }

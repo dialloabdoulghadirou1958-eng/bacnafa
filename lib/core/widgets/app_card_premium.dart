@@ -9,6 +9,7 @@ class AppCardPremium extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final VoidCallback? onTap;
   final List<BoxShadow>? shadows;
+  final BorderSide? border;
 
   const AppCardPremium({
     super.key,
@@ -16,6 +17,7 @@ class AppCardPremium extends StatefulWidget {
     this.padding,
     this.onTap,
     this.shadows,
+    this.border,
   });
 
   @override
@@ -43,6 +45,10 @@ class _AppCardPremiumState extends State<AppCardPremium> {
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(AppRadius.card),
             boxShadow: widget.shadows ?? AppShadows.soft,
+            border: Border.all(
+              color: widget.border?.color ?? AppColors.borderSubtle,
+              width: widget.border?.width ?? 1.0,
+            ),
           ),
           child: widget.child,
         ),

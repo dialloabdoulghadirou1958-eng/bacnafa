@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:bac_nafa/app/main_scaffold.dart';
 import 'package:bac_nafa/app/splash/splash_page.dart';
+import 'package:bac_nafa/core/design/page_transitions.dart';
 import 'package:bac_nafa/features/home/presentation/pages/home_page.dart';
 import 'package:bac_nafa/features/subjects/presentation/pages/subjects_page.dart';
 import 'package:bac_nafa/features/subjects/presentation/pages/series_page.dart';
@@ -24,19 +25,23 @@ final goRouter = GoRouter(
   routes: [
     GoRoute(
       path: '/splash',
-      builder: (context, state) => const SplashPage(),
+      pageBuilder: (context, state) =>
+          AppPageTransitions.scaleFade(child: const SplashPage(), state: state),
     ),
     GoRoute(
       path: '/onboarding',
-      builder: (context, state) => const OnboardingPage(),
+      pageBuilder: (context, state) =>
+          AppPageTransitions.fadeThrough(child: const OnboardingPage(), state: state),
     ),
     GoRoute(
       path: '/login',
-      builder: (context, state) => const LoginPage(),
+      pageBuilder: (context, state) =>
+          AppPageTransitions.fadeThrough(child: const LoginPage(), state: state),
     ),
     GoRoute(
       path: '/register',
-      builder: (context, state) => const RegisterPage(),
+      pageBuilder: (context, state) =>
+          AppPageTransitions.slideUp(child: const RegisterPage(), state: state),
     ),
     ShellRoute(
       builder: (context, state, child) {
@@ -45,55 +50,68 @@ final goRouter = GoRouter(
       routes: [
         GoRoute(
           path: '/home',
-          builder: (context, state) => const HomePage(),
+          pageBuilder: (context, state) =>
+              AppPageTransitions.scaleFade(child: const HomePage(), state: state),
         ),
         GoRoute(
           path: '/subjects',
-          builder: (context, state) => const SubjectsPage(),
+          pageBuilder: (context, state) =>
+              AppPageTransitions.fadeThrough(child: const SubjectsPage(), state: state),
         ),
         GoRoute(
           path: '/subjects/:subjectId/series',
-          builder: (context, state) => const SeriesPage(),
+          pageBuilder: (context, state) =>
+              AppPageTransitions.slideFromRight(child: const SeriesPage(), state: state),
         ),
         GoRoute(
           path: '/subjects/:subjectId/series/:seriesId/years',
-          builder: (context, state) => const YearsPage(),
+          pageBuilder: (context, state) =>
+              AppPageTransitions.slideFromRight(child: const YearsPage(), state: state),
         ),
         GoRoute(
           path: '/exams',
-          builder: (context, state) => const ExamPapersPage(),
+          pageBuilder: (context, state) =>
+              AppPageTransitions.slideFromRight(child: const ExamPapersPage(), state: state),
         ),
         GoRoute(
           path: '/exam/:id',
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             final id = state.pathParameters['id'] ?? '';
-            return ExamViewerPage(examId: id);
+            return AppPageTransitions.slideFromRight(
+              child: ExamViewerPage(examId: id),
+              state: state,
+            );
           },
         ),
         GoRoute(
           path: '/library',
-          builder: (context, state) => const LibraryPage(),
+          pageBuilder: (context, state) =>
+              AppPageTransitions.fadeThrough(child: const LibraryPage(), state: state),
         ),
         GoRoute(
           path: '/ai',
-          builder: (context, state) => const AIChatPage(),
+          pageBuilder: (context, state) =>
+              AppPageTransitions.slideFromRight(child: const AIChatPage(), state: state),
         ),
         GoRoute(
           path: '/assistant/history',
-          builder: (context, state) => const AIHistoryPage(),
+          pageBuilder: (context, state) =>
+              AppPageTransitions.slideFromRight(child: const AIHistoryPage(), state: state),
         ),
         GoRoute(
           path: '/quiz/:id',
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             final id = state.pathParameters['id'] ?? '1';
-            return ProviderScope(
-              child: _QuizPageWrapper(quizId: id),
+            return AppPageTransitions.slideUp(
+              child: ProviderScope(child: _QuizPageWrapper(quizId: id)),
+              state: state,
             );
           },
         ),
         GoRoute(
           path: '/profile',
-          builder: (context, state) => const ProfileScreen(),
+          pageBuilder: (context, state) =>
+              AppPageTransitions.fadeThrough(child: const ProfileScreen(), state: state),
         ),
       ],
     ),

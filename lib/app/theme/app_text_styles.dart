@@ -157,6 +157,16 @@ class AppTextStyles {
     height: 1.0,
   );
 
+  static const TextStyle caption = TextStyle(
+    fontFamily: _fontFamily,
+    package: _package,
+    fontSize: 11,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textTertiary,
+    letterSpacing: 0.2,
+    height: 1.4,
+  );
+
   static TextTheme get textTheme => const TextTheme(
     displayLarge: displayLarge,
     displayMedium: displayMedium,

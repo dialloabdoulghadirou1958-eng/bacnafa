@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'app_colors.dart';
 import 'app_text_styles.dart';
 
 class AppTheme {
   AppTheme._();
+
+  static const SystemUiOverlayStyle lightStatusBar = SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark,
+    statusBarBrightness: Brightness.light,
+    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarIconBrightness: Brightness.dark,
+    systemNavigationBarDividerColor: Colors.transparent,
+  );
 
   static ThemeData get lightTheme {
     final colorScheme = AppColors.lightColorScheme;
@@ -23,6 +33,7 @@ class AppTheme {
         centerTitle: false,
         titleTextStyle: AppTextStyles.headlineLarge,
         surfaceTintColor: Colors.transparent,
+        systemOverlayStyle: lightStatusBar,
       ),
 
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -157,6 +168,8 @@ class AppTheme {
             letterSpacing: 0.1,
           );
         }),
+        height: 72,
+        surfaceTintColor: Colors.transparent,
       ),
 
       dividerTheme: DividerThemeData(

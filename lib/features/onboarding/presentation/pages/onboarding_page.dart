@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bac_nafa/app/routes.dart';
 import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/app/theme/app_text_styles.dart';
+import 'package:bac_nafa/app/theme/app_theme.dart';
 import 'package:bac_nafa/core/design/app_radius.dart';
 import 'package:bac_nafa/features/onboarding/presentation/widgets/onboarding_indicator.dart';
 import 'package:bac_nafa/features/onboarding/providers/onboarding_provider.dart';
@@ -90,8 +92,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
   Widget build(BuildContext context) {
     final data = ref.watch(onboardingProvider);
 
-    return Scaffold(
-      body: Stack(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: AppTheme.lightStatusBar,
+      child: Scaffold(
+        body: Stack(
         children: [
           Positioned.fill(
             child: _AnimatedGradient(
@@ -185,7 +189,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
           ),
         ],
       ),
-    );
+    ),
+  );
   }
 }
 
