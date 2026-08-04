@@ -12,6 +12,8 @@ class AppPrimaryButton extends StatelessWidget {
   final IconData? icon;
   final Color? backgroundColor;
   final Color? foregroundColor;
+  final bool outlined;
+  final double? width;
 
   const AppPrimaryButton({
     super.key,
@@ -21,6 +23,8 @@ class AppPrimaryButton extends StatelessWidget {
     this.icon,
     this.backgroundColor,
     this.foregroundColor,
+    this.outlined = false,
+    this.width,
   });
 
   @override
@@ -28,42 +32,70 @@ class AppPrimaryButton extends StatelessWidget {
     final effectiveBgColor = backgroundColor ?? AppColors.primary;
     final effectiveFgColor = foregroundColor ?? AppColors.onPrimary;
 
-    return SizedBox(
-      width: double.infinity,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOutCubic,
+      width: width ?? double.infinity,
       height: AppDimensions.buttonHeight,
-      child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: effectiveBgColor,
-          foregroundColor: effectiveFgColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.button),
-          ),
-          elevation: 0,
-        ),
-        child: isLoading
-            ? SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: effectiveFgColor,
+      child: outlined
+          ? OutlinedButton(
+              onPressed: isLoading ? null : onPressed,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: effectiveBgColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.button),
                 ),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (icon != null) ...[
-                    Icon(icon, size: AppDimensions.iconMedium),
-                    SizedBox(width: AppSpacing.sm),
-                  ],
-                  Text(
-                    text,
-                    style: AppTextStyles.buttonText,
-                  ),
-                ],
+                side: BorderSide(color: effectiveBgColor, width: 1.5),
               ),
-      ),
+              child: _buildChild(effectiveBgColor),
+            )
+          : ElevatedButton(
+              onPressed: isLoading ? null : onPressed,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: effectiveBgColor,
+                foregroundColor: effectiveFgColor,
+                disabledBackgroundColor: AppColors.surfaceContainerHigh,
+                disabledForegroundColor: AppColors.textTertiary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.button),
+                ),
+                elevation: 0,
+              ),
+              child: _buildChild(effectiveFgColor),
+            ),
+    );
+  }
+
+  Widget _buildChild(Color spinnerColor) {
+    if (isLoading) {
+      return SizedBox(
+        height: 20,
+        width: 20,
+        child: CircularProgressIndicator(
+          strokeWidth: 2.5,
+          color: spinnerColor,
+        ),
+      );
+    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (icon != null) ...[
+          Icon(icon, size: AppDimensions.iconMedium),
+          SizedBox(width: AppSpacing.sm),
+        ],
+        Flexible(
+          child: Text(
+            text,
+            style: AppTextStyles.buttonText.copyWith(
+              color: outlined ? spinnerColor : AppTextStyles.buttonText.color,
+            ),
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 }

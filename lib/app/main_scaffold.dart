@@ -11,17 +11,24 @@ class MainScaffold extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final String location = GoRouterState.of(context).uri.toString();
-    int navIndex = 0;
-    if (location.startsWith('/subjects')) {
-      navIndex = 1;
-    } else if (location.startsWith('/ai')) {
-      navIndex = 2;
-    } else if (location.startsWith('/profile')) {
-      navIndex = 3;
-    }
+    int navIndex = _computeIndex(location);
 
     return Scaffold(
-      body: child,
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 250),
+        switchInCurve: Curves.easeOutCubic,
+        switchOutCurve: Curves.easeInCubic,
+        transitionBuilder: (child, animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        child: KeyedSubtree(
+          key: ValueKey(navIndex),
+          child: child,
+        ),
+      ),
       bottomNavigationBar: AppBottomNavigation(
         currentIndex: navIndex,
         onItemSelected: (index) {
@@ -30,5 +37,12 @@ class MainScaffold extends ConsumerWidget {
         },
       ),
     );
+  }
+
+  int _computeIndex(String location) {
+    if (location.startsWith('/subjects')) return 1;
+    if (location.startsWith('/ai')) return 2;
+    if (location.startsWith('/profile')) return 3;
+    return 0;
   }
 }

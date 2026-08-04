@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/app/theme/app_text_styles.dart';
-import 'package:bac_nafa/core/design/app_spacing.dart';
-import 'package:bac_nafa/core/widgets/app_primary_button.dart';
-import 'package:bac_nafa/features/exam_viewer/models/exam_content.dart';
-import 'package:bac_nafa/features/exam_viewer/providers/exam_providers.dart';
+import 'package:bac_nafa/core/design/app_radius.dart';
+import 'package:bac_nafa/core/design/app_shadows.dart';
+import 'package:bac_nafa/core/services/exam_actions.dart';
 import 'package:bac_nafa/features/exam_viewer/presentation/widgets/exam_widgets.dart';
-import 'package:bac_nafa/features/library/domain/models/library_models.dart';
-import 'package:bac_nafa/features/library/providers/library_providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:bac_nafa/features/exam_viewer/providers/exam_providers.dart';
 
 class ExamViewerPage extends ConsumerStatefulWidget {
   final String examId;
-
   const ExamViewerPage({super.key, required this.examId});
 
   @override
@@ -21,25 +18,37 @@ class ExamViewerPage extends ConsumerStatefulWidget {
 }
 
 class _ExamViewerPageState extends ConsumerState<ExamViewerPage> {
+  final ScrollController _scrollController = ScrollController();
+  bool _showBottomBar = true;
+
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(() {
+      final isAtBottom = _scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 100;
+      if (_showBottomBar == isAtBottom) {
+        setState(() => _showBottomBar = !isAtBottom);
+      }
+    });
     _addToHistory();
   }
 
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   void _addToHistory() {
-    // We use Future.microtask to avoid updating state during build
     Future.microtask(() async {
       final examAsync = await ref.read(examContentProvider(widget.examId).future);
       if (examAsync != null) {
-        ref.read(historyProvider.notifier).addExamToHistory(
-          HistoryItem(
-            itemId: examAsync.id,
-            title: examAsync.title,
-            subjectName: examAsync.subjectName,
-            year: examAsync.year,
-            accessedAt: DateTime.now(),
-          ),
+        await ref.read(addToHistoryActionProvider.notifier)(
+          examAsync.id,
+          examAsync.title,
+          examAsync.subjectName,
+          examAsync.year,
         );
       }
     });
@@ -48,34 +57,28 @@ class _ExamViewerPageState extends ConsumerState<ExamViewerPage> {
   @override
   Widget build(BuildContext context) {
     final examAsync = ref.watch(examContentProvider(widget.examId));
-    final favorites = ref.watch(favoritesProvider);
+    final isFavorite = ref.watch(isFavoriteProvider(widget.examId));
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Sujet'),
+        scrolledUnderElevation: 1,
         actions: [
           IconButton(
             icon: Icon(
-              favorites.any((f) => f.itemId == widget.examId && f.type == FavoriteType.subject) 
-                ? Icons.star 
-                : Icons.star_border,
-              color: favorites.any((f) => f.itemId == widget.examId && f.type == FavoriteType.subject) 
-                ? Colors.amber 
-                : AppColors.textSecondary,
+              isFavorite
+                  ? Icons.star_rounded
+                  : Icons.star_outline_rounded,
+              color: isFavorite
+                  ? Colors.amber
+                  : AppColors.textSecondary,
             ),
             onPressed: () async {
               final exam = examAsync.value;
               if (exam != null) {
-                await ref.read(favoritesProvider.notifier).toggleFavorite(
-                  FavoriteItem(
-                    id: '${widget.examId}_fav',
-                    type: FavoriteType.subject,
-                    itemId: widget.examId,
-                    title: exam.title,
-                    createdAt: DateTime.now(),
-                  ),
-                );
+                await ref.read(toggleFavoriteActionProvider.notifier)
+                  .call(widget.examId, exam.title);
               }
             },
           ),
@@ -84,62 +87,85 @@ class _ExamViewerPageState extends ConsumerState<ExamViewerPage> {
       body: examAsync.when(
         data: (exam) {
           if (exam == null) {
-            return const Center(child: Text('Sujet non trouvé'));
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.search_off_rounded, color: AppColors.textTertiary, size: 56),
+                  const SizedBox(height: 12),
+                  Text('Sujet non trouvé', style: AppTextStyles.titleMedium.copyWith(color: AppColors.textSecondary)),
+                ],
+              ),
+            );
           }
 
-          return SafeArea(
-            child: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.all(AppSpacing.md),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ExamHeaderCard(exam: exam),
-                        SizedBox(height: AppSpacing.xl),
-                        ...exam.sections.map((section) => ExamSectionCard(section: section)),
-                        SizedBox(height: AppSpacing.xxl),
-                      ],
+          return Stack(
+            children: [
+              Positioned.fill(
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ExamHeaderCard(exam: exam),
+                      const SizedBox(height: 24),
+                      ...exam.sections.map((section) => Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: ExamSectionCard(section: section),
+                      )),
+                      SizedBox(height: _showBottomBar ? 100 : 24),
+                    ],
+                  ),
+                ),
+              ),
+              if (_showBottomBar)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface,
+                      boxShadow: AppShadows.soft,
+                    ),
+                    padding: EdgeInsets.fromLTRB(20, 12, 20, MediaQuery.of(context).padding.bottom + 12),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          context.push(
+                            '/ai?examId=${exam.id}&title=${Uri.encodeComponent(exam.title)}&subject=${Uri.encodeComponent(exam.subjectName)}',
+                          );
+                        },
+                        icon: const Icon(Icons.psychology_rounded, size: 20),
+                        label: const Text('Demander à l\'Assistant IA'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.tertiary,
+                          foregroundColor: AppColors.onTertiary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppRadius.button),
+                          ),
+                          elevation: 0,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-                _buildBottomActionBar(context, exam),
-              ],
-            ),
+            ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Erreur: $err')),
-      ),
-    );
-  }
-
-  Widget _buildBottomActionBar(BuildContext context, ExamContent exam) {
-    return Container(
-      padding: EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: SizedBox(
-          width: double.infinity,
-          child: AppPrimaryButton(
-            text: 'Demander à l\'Assistant IA',
-            onPressed: () {
-              context.push(
-                '/ai?examId=${exam.id}&title=${Uri.encodeComponent(exam.title)}&subject=${Uri.encodeComponent(exam.subjectName)}',
-              );
-            },
-            icon: Icons.auto_awesome,
-            backgroundColor: AppColors.aiAccent,
+        loading: () => const Center(child: CircularProgressIndicator(strokeWidth: 2.5)),
+        error: (err, _) => Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, color: AppColors.error, size: 48),
+              const SizedBox(height: 12),
+              Text('$err', style: AppTextStyles.bodyMedium, textAlign: TextAlign.center),
+            ],
           ),
         ),
       ),

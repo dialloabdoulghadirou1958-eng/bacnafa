@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:bac_nafa/app/main_scaffold.dart';
+import 'package:bac_nafa/app/splash/splash_page.dart';
 import 'package:bac_nafa/features/home/presentation/pages/home_page.dart';
 import 'package:bac_nafa/features/subjects/presentation/pages/subjects_page.dart';
 import 'package:bac_nafa/features/subjects/presentation/pages/series_page.dart';
@@ -11,14 +12,12 @@ import 'package:bac_nafa/features/library/presentation/pages/library_page.dart';
 import 'package:bac_nafa/features/ai_assistant/presentation/pages/ai_chat_page.dart';
 import 'package:bac_nafa/features/ai_assistant/presentation/pages/ai_history_page.dart';
 import 'package:bac_nafa/features/profile/presentation/pages/profile_screen.dart';
-import 'package:bac_nafa/features/onboarding/presentation/pages/splash_page.dart';
 import 'package:bac_nafa/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:bac_nafa/features/auth/presentation/pages/login_page.dart';
 import 'package:bac_nafa/features/auth/presentation/pages/register_page.dart';
 import 'package:bac_nafa/features/quiz/presentation/pages/quiz_page.dart';
-import 'package:bac_nafa/features/quiz/domain/models/quiz_models.dart';
-import 'package:bac_nafa/features/quiz/data/mock_quiz_repository.dart';
-
+import 'package:bac_nafa/features/quiz/providers/quiz_providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final goRouter = GoRouter(
   initialLocation: '/splash',
@@ -86,24 +85,10 @@ final goRouter = GoRouter(
         GoRoute(
           path: '/quiz/:id',
           builder: (context, state) {
-            // For now, hardcode the quiz data
-            final quiz = Quiz(
-              id: '1',
-              title: 'Math Quiz',
-              description: 'Basic math',
-              questions: [
-                Question(
-                  id: 'q1',
-                  text: 'What is 2 + 2?',
-                  options: [
-                    Option(id: 'o1', text: '3', isCorrect: false),
-                    Option(id: 'o2', text: '4', isCorrect: true),
-                    Option(id: 'o3', text: '5', isCorrect: false),
-                  ],
-                ),
-              ],
+            final id = state.pathParameters['id'] ?? '1';
+            return ProviderScope(
+              child: _QuizPageWrapper(quizId: id),
             );
-            return QuizPage(quiz: quiz);
           },
         ),
         GoRoute(
@@ -117,3 +102,38 @@ final goRouter = GoRouter(
     body: Center(child: Text('Page not found: ${state.error}')),
   ),
 );
+
+class _QuizPageWrapper extends ConsumerWidget {
+  final String quizId;
+  const _QuizPageWrapper({required this.quizId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final quizAsync = ref.watch(quizByIdProvider(quizId));
+    return quizAsync.when(
+      data: (quiz) {
+        if (quiz == null) {
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.search_off_rounded, color: Colors.grey, size: 48),
+                  const SizedBox(height: 12),
+                  const Text('Quiz non trouvé'),
+                ],
+              ),
+            ),
+          );
+        }
+        return QuizPage(quiz: quiz);
+      },
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Scaffold(
+        body: Center(child: Text('Erreur: $e')),
+      ),
+    );
+  }
+}

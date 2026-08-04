@@ -11,13 +11,7 @@ final recentExamRepositoryProvider = Provider<RecentExamRepository>((ref) {
   return MockRecentExamRepository();
 });
 
-final localStorageRepositoryProvider = Provider<LocalStorageRepository>((ref) {
-  return MockLocalStorageRepository();
-});
-
-final favoritesProvider = NotifierProvider<FavoritesNotifier, List<FavoriteItem>>(() {
-  return FavoritesNotifier();
-});
+final favoritesProvider = NotifierProvider<FavoritesNotifier, List<FavoriteItem>>(FavoritesNotifier.new);
 
 class FavoritesNotifier extends Notifier<List<FavoriteItem>> {
   @override
@@ -35,7 +29,7 @@ class FavoritesNotifier extends Notifier<List<FavoriteItem>> {
     final repository = ref.read(favoriteRepositoryProvider);
     final isFav = await repository.isFavorite(item.itemId, item.type);
     if (isFav) {
-      final favorite = state.firstWhere((f) => f.itemId == item.itemId && f.type == item.type);
+      final favorite = state.where((f) => f.itemId == item.itemId && f.type == item.type).first;
       await repository.removeFavorite(favorite.id);
     } else {
       await repository.addFavorite(item);
@@ -48,9 +42,7 @@ class FavoritesNotifier extends Notifier<List<FavoriteItem>> {
   }
 }
 
-final historyProvider = NotifierProvider<HistoryNotifier, List<HistoryItem>>(() {
-  return HistoryNotifier();
-});
+final historyProvider = NotifierProvider<HistoryNotifier, List<HistoryItem>>(HistoryNotifier.new);
 
 class HistoryNotifier extends Notifier<List<HistoryItem>> {
   @override

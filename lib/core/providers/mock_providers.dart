@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bac_nafa/core/models/student_profile.dart';
 import 'package:bac_nafa/core/models/subject.dart';
-import 'package:bac_nafa/core/models/chat_message.dart';
 import 'package:bac_nafa/app/theme/app_colors.dart';
 
 final currentUserProvider = Provider<StudentProfile>((ref) {
@@ -15,73 +14,41 @@ final currentUserProvider = Provider<StudentProfile>((ref) {
   );
 });
 
-final subjectsProvider = Provider<List<Subject>>((ref) {
-  return [
-    const Subject(
-      id: 'sub_1',
-      name: 'Mathématiques',
-      description: 'Analyse, Algèbre et Géométrie',
-      icon: Icons.calculate,
-      progress: 0.65,
-      color: AppColors.primary,
-    ),
-    const Subject(
-      id: 'sub_2',
-      name: 'Physique-Chimie',
-      description: 'Mécanique, Électricité et Chimie organique',
-      icon: Icons.science,
-      progress: 0.30,
-      color: Colors.orange,
-    ),
-    const Subject(
-      id: 'sub_3',
-      name: 'SVT',
-      description: 'Biologie et Géologie',
-      icon: Icons.biotech,
-      progress: 0.50,
-      color: Colors.green,
-    ),
-    const Subject(
-      id: 'sub_4',
-      name: 'Philosophie',
-      description: 'Réflexion critique et méthodologie',
-      icon: Icons.menu_book,
-      progress: 0.20,
-      color: Colors.purple,
-    ),
-  ];
+final subjectsProvider = Provider<List<CoreSubject>>((ref) {
+  return _allSubjects;
 });
 
-class ChatMessagesNotifier extends Notifier<List<ChatMessage>> {
-  @override
-  List<ChatMessage> build() {
-    return [
-      ChatMessage(
-        id: 'm1',
-        content: 'Bonjour ! Je suis ton assistant BacNafa. Comment puis-je t\'aider aujourd\'hui ?',
-        isUser: false,
-        createdAt: DateTime.now().subtract(const Duration(minutes: 10)),
-      ),
-      ChatMessage(
-        id: 'm2',
-        content: 'Peux-tu m\'expliquer le théorème des valeurs intermédiaires ?',
-        isUser: true,
-        createdAt: DateTime.now().subtract(const Duration(minutes: 5)),
-      ),
-      ChatMessage(
-        id: 'm3',
-        content: 'Bien sûr ! Le TVI stipule que si une fonction f est continue sur un intervalle [a, b]...',
-        isUser: false,
-        createdAt: DateTime.now().subtract(const Duration(minutes: 4)),
-      ),
-    ];
-  }
-
-  void addMessage(ChatMessage message) {
-    state = [...state, message];
-  }
-}
-
-final chatMessagesProvider = NotifierProvider<ChatMessagesNotifier, List<ChatMessage>>(() {
-  return ChatMessagesNotifier();
-});
+const _allSubjects = [
+  CoreSubject(
+    id: 'sub_1',
+    name: 'Mathématiques',
+    description: 'Analyse, Algèbre et Géométrie',
+    icon: Icons.calculate,
+    progress: 0.65,
+    color: AppColors.primary,
+  ),
+  CoreSubject(
+    id: 'sub_2',
+    name: 'Physique-Chimie',
+    description: 'Mécanique, Électricité et Chimie organique',
+    icon: Icons.science,
+    progress: 0.30,
+    color: Colors.orange,
+  ),
+  CoreSubject(
+    id: 'sub_3',
+    name: 'SVT',
+    description: 'Biologie et Géologie',
+    icon: Icons.biotech,
+    progress: 0.50,
+    color: Colors.green,
+  ),
+  CoreSubject(
+    id: 'sub_4',
+    name: 'Philosophie',
+    description: 'Réflexion critique et méthodologie',
+    icon: Icons.menu_book,
+    progress: 0.20,
+    color: Colors.purple,
+  ),
+];

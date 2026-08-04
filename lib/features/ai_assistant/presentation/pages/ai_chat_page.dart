@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/app/theme/app_text_styles.dart';
-import 'package:bac_nafa/core/design/app_spacing.dart';
+import 'package:bac_nafa/core/design/app_radius.dart';
 import 'package:bac_nafa/features/ai_assistant/domain/models/chat_models.dart';
 import 'package:bac_nafa/features/ai_assistant/providers/ai_providers.dart';
 import 'package:bac_nafa/features/ai_assistant/presentation/widgets/chat_bubble.dart';
 import 'package:bac_nafa/features/ai_assistant/presentation/widgets/chat_input.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class AIChatPage extends ConsumerStatefulWidget {
   const AIChatPage({super.key});
@@ -17,13 +17,11 @@ class AIChatPage extends ConsumerStatefulWidget {
 }
 
 class _AIChatPageState extends ConsumerState<AIChatPage> {
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _handleContext();
-  }
-
-  void _handleContext() {
     final uri = GoRouterState.of(context).uri;
     final examId = uri.queryParameters['examId'];
     final subject = uri.queryParameters['subject'];
@@ -33,15 +31,15 @@ class _AIChatPageState extends ConsumerState<AIChatPage> {
       ref.read(examContextProvider.notifier).set(ExamContext(
         examId: examId,
         subjectName: subject ?? 'Sujet',
-        series: 'Série', // Simplified for mock
-        year: '2026',     // Simplified for mock
+        series: 'Série',
+        year: '2026',
         contentSummary: title ?? '',
       ));
     }
   }
 
   Future<void> _sendMessage(String text) async {
-    final messageId = DateTime.now().millisecondsSinceEpoch.toString();
+    final messageId = DateTime.now().microsecondsSinceEpoch.toString();
     final userMsg = ChatMessage(
       id: messageId,
       contents: [MessageContent(text: text)],
@@ -53,21 +51,20 @@ class _AIChatPageState extends ConsumerState<AIChatPage> {
     ref.read(messagesProvider.notifier).addMessage(userMsg);
     ref.read(isSendingProvider.notifier).set(true);
 
+    _scrollToBottom();
+
     try {
       final repository = ref.read(aiRepositoryProvider);
-      final context = ref.read(examContextProvider);
-      final response = await repository.sendMessage(text, context);
-      
+      final contextExam = ref.read(examContextProvider);
+      final response = await repository.sendMessage(text, contextExam);
+
       ref.read(messagesProvider.notifier).addMessage(response);
-    } catch (e) {
+    } catch (_) {
       ref.read(messagesProvider.notifier).addMessage(
         ChatMessage(
-          id: 'err_${DateTime.now().millisecondsSinceEpoch}',
+          id: 'err_${DateTime.now().microsecondsSinceEpoch}',
           contents: [
-            MessageContent(
-              text: 'Désolé, une erreur est survenue. Veuillez réessayer.',
-              type: MessageContentType.text,
-            ),
+            MessageContent(text: 'Désolé, une erreur est survenue. Veuillez réessayer.', type: MessageContentType.text),
           ],
           role: ChatRole.assistant,
           timestamp: DateTime.now(),
@@ -76,52 +73,93 @@ class _AIChatPageState extends ConsumerState<AIChatPage> {
       );
     } finally {
       ref.read(isSendingProvider.notifier).set(false);
+      _scrollToBottom();
     }
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutCubic,
+        );
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final messages = ref.watch(messagesProvider);
     final examContext = ref.watch(examContextProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Assistant IA'),
-        centerTitle: true,
+        scrolledUnderElevation: 1,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history_rounded, size: 22),
+            onPressed: () => context.push('/assistant/history'),
+          ),
+        ],
       ),
       body: Column(
         children: [
           if (examContext != null)
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(AppSpacing.md),
-                color: AppColors.primaryLight.withValues(alpha: 0.5),
-              child: Row(
-                children: [
-                  const Icon(Icons.book_rounded, color: AppColors.primary, size: 20),
-                  SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: Text(
-                      'Sujet : ${examContext.subjectName} - ${examContext.year}',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
+            Material(
+              color: AppColors.tertiaryContainer,
+              child: InkWell(
+                onTap: null,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: AppColors.tertiary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.book_rounded, color: AppColors.tertiary, size: 18),
                       ),
-                    ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          '${examContext.subjectName} — ${examContext.contentSummary}',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: colorScheme.onTertiaryContainer,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => ref.read(examContextProvider.notifier).set(null),
+                        child: const Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Icon(Icons.close_rounded, size: 20, color: AppColors.tertiary),
+                        ),
+                      ),
+                    ],
                   ),
-                  TextButton(
-                    onPressed: () => ref.read(examContextProvider.notifier).set(null),
-                    child: const Text('Fermer', style: TextStyle(fontSize: 12)),
-                  ),
-                ],
+                ),
               ),
             ),
           Expanded(
             child: messages.isEmpty
-                ? _buildEmptyState()
+                ? _EmptyChat(
+                    examContext: examContext,
+                    onPrompt: (text) => _sendMessage(text),
+                  )
                 : ListView.builder(
-                    padding: EdgeInsets.all(AppSpacing.md),
+                    controller: _scrollController,
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                     itemCount: messages.length,
                     itemBuilder: (context, index) => ChatBubble(message: messages[index]),
                   ),
@@ -131,26 +169,82 @@ class _AIChatPageState extends ConsumerState<AIChatPage> {
       ),
     );
   }
+}
 
-  Widget _buildEmptyState() {
+class _EmptyChat extends StatelessWidget {
+  final ExamContext? examContext;
+  final void Function(String) onPrompt;
+
+  const _EmptyChat({required this.examContext, required this.onPrompt});
+
+  @override
+  Widget build(BuildContext context) {
+    const suggestions = [
+      'Explique-moi les limites de fonctions',
+      'Comment résoudre une équation différentielle ?',
+      'Peux-tu m\'expliquer la loi d\'Ohm ?',
+      'Aide-moi à comprendre les suites géométriques',
+    ];
+
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(AppSpacing.lg),
+        padding: const EdgeInsets.all(24),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.auto_awesome, size: 64, color: AppColors.aiAccent),
-            SizedBox(height: AppSpacing.md),
-            Text(
-              'Bonjour ! Je suis ton tuteur IA spécialisé Bac.',
-              textAlign: TextAlign.center,
-              style: AppTextStyles.titleMedium,
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.tertiaryContainer,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: const Icon(Icons.psychology_rounded, color: AppColors.tertiary, size: 48),
             ),
-            SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: 20),
             Text(
-              'Pose-moi une question sur un exercice ou demande-moi une explication de cours.',
+              'Tuteur IA Bac',
+              style: AppTextStyles.headlineSmall,
               textAlign: TextAlign.center,
-              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Pose-moi tes questions sur les sujets du Bac et j\'analyse chaque étape avec toi.',
+              style: AppTextStyles.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+            if (examContext != null) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.tertiaryContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Contexte : ${examContext!.contentSummary}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.onTertiaryContainer,
+                  ),
+                ),
+              ),
+            ],
+            const SizedBox(height: 20),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: suggestions.map((s) {
+                return ActionChip(
+                  label: Text(s, style: const TextStyle(fontSize: 12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.chip),
+                  ),
+                  backgroundColor: AppColors.surfaceContainerHighest,
+                  side: BorderSide.none,
+                  onPressed: () => onPrompt(s),
+                );
+              }).toList(),
             ),
           ],
         ),

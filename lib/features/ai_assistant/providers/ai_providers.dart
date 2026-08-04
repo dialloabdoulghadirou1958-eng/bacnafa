@@ -7,9 +7,7 @@ final aiRepositoryProvider = Provider<AIRepository>((ref) {
   return MockAIRepository();
 });
 
-final examContextProvider = NotifierProvider<ExamContextNotifier, ExamContext?>(() {
-  return ExamContextNotifier();
-});
+final examContextProvider = NotifierProvider<ExamContextNotifier, ExamContext?>(ExamContextNotifier.new);
 
 class ExamContextNotifier extends Notifier<ExamContext?> {
   @override
@@ -18,9 +16,7 @@ class ExamContextNotifier extends Notifier<ExamContext?> {
   void set(ExamContext? context) => state = context;
 }
 
-final isSendingProvider = NotifierProvider<IsSendingNotifier, bool>(() {
-  return IsSendingNotifier();
-});
+final isSendingProvider = NotifierProvider<IsSendingNotifier, bool>(IsSendingNotifier.new);
 
 class IsSendingNotifier extends Notifier<bool> {
   @override
@@ -29,9 +25,7 @@ class IsSendingNotifier extends Notifier<bool> {
   void set(bool value) => state = value;
 }
 
-final messagesProvider = NotifierProvider<MessagesNotifier, List<ChatMessage>>(() {
-  return MessagesNotifier();
-});
+final messagesProvider = NotifierProvider<MessagesNotifier, List<ChatMessage>>(MessagesNotifier.new);
 
 class MessagesNotifier extends Notifier<List<ChatMessage>> {
   @override
@@ -51,15 +45,4 @@ class MessagesNotifier extends Notifier<List<ChatMessage>> {
   void clear() {
     state = [];
   }
-}
-
-final conversationProvider = NotifierProvider<ConversationNotifier, Conversation?>(() {
-  return ConversationNotifier();
-});
-
-class ConversationNotifier extends Notifier<Conversation?> {
-  @override
-  Conversation? build() => null;
-
-  void set(Conversation? conv) => state = conv;
 }

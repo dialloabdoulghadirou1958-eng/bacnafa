@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class Subject {
+class CoreSubject {
   final String id;
   final String name;
   final String description;
@@ -8,7 +8,7 @@ class Subject {
   final double progress;
   final Color color;
 
-  const Subject({
+  const CoreSubject({
     required this.id,
     required this.name,
     required this.description,
@@ -17,14 +17,14 @@ class Subject {
     required this.color,
   });
 
-  Subject copyWith({
+  CoreSubject copyWith({
     String? name,
     String? description,
     IconData? icon,
     double? progress,
     Color? color,
   }) {
-    return Subject(
+    return CoreSubject(
       id: id,
       name: name ?? this.name,
       description: description ?? this.description,

@@ -20,9 +20,7 @@ class OnboardingNotifier extends Notifier<OnboardingData> {
   }
 }
 
-final onboardingProvider = NotifierProvider<OnboardingNotifier, OnboardingData>(() {
-  return OnboardingNotifier();
-});
+final onboardingProvider = NotifierProvider<OnboardingNotifier, OnboardingData>(OnboardingNotifier.new);
 
 class FirstLaunchNotifier extends Notifier<bool> {
 
@@ -32,6 +30,4 @@ class FirstLaunchNotifier extends Notifier<bool> {
   void setFirstLaunch(bool value) => state = value;
 }
 
-final isFirstLaunchProvider = NotifierProvider<FirstLaunchNotifier, bool>(() {
-  return FirstLaunchNotifier();
-});
+final isFirstLaunchProvider = NotifierProvider<FirstLaunchNotifier, bool>(FirstLaunchNotifier.new);

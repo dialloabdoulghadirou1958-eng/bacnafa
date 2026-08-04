@@ -41,23 +41,26 @@ class ExamCorrectionFilterNotifier extends Notifier<bool?> {
 }
 final examCorrectionFilterProvider = NotifierProvider<ExamCorrectionFilterNotifier, bool?>(ExamCorrectionFilterNotifier.new);
 
-// Data providers
-final subjectsListProvider = FutureProvider<List<Subject>>((ref) {
+final subjectsListProvider =
+    FutureProvider.autoDispose<List<Subject>>((ref) {
   final repo = ref.watch(subjectsRepositoryProvider);
   return repo.getSubjects();
 });
 
-final seriesListProvider = FutureProvider<List<BacSeries>>((ref) {
+final seriesListProvider =
+    FutureProvider.autoDispose<List<BacSeries>>((ref) {
   final repo = ref.watch(seriesRepositoryProvider);
   return repo.getSeries();
 });
 
-final yearsListProvider = FutureProvider<List<BacYear>>((ref) {
+final yearsListProvider =
+    FutureProvider.autoDispose<List<BacYear>>((ref) {
   final repo = ref.watch(yearsRepositoryProvider);
   return repo.getYears();
 });
 
-final examPapersProvider = FutureProvider<List<ExamPaper>>((ref) {
+final examPapersProvider =
+    FutureProvider.autoDispose<List<ExamPaper>>((ref) {
   final repo = ref.watch(examRepositoryProvider);
   final subject = ref.watch(selectedSubjectProvider);
   final series = ref.watch(selectedSeriesProvider);
@@ -70,16 +73,20 @@ final examPapersProvider = FutureProvider<List<ExamPaper>>((ref) {
   );
 });
 
-// Filtered provider
-final filteredExamsProvider = Provider<AsyncValue<List<ExamPaper>>>((ref) {
+final filteredExamsProvider =
+    Provider.autoDispose<AsyncValue<List<ExamPaper>>>((ref) {
   final examsAsync = ref.watch(examPapersProvider);
-  final query = ref.watch(examSearchQueryProvider).toLowerCase();
+  final rawQuery = ref.watch(examSearchQueryProvider);
   final correctionOnly = ref.watch(examCorrectionFilterProvider);
 
   return examsAsync.whenData((exams) {
+    if (rawQuery.isEmpty && correctionOnly == null) return exams;
+    final query = rawQuery.toLowerCase();
     return exams.where((exam) {
-      final matchesQuery = exam.title.toLowerCase().contains(query);
-      final matchesCorrection = correctionOnly == null || exam.hasCorrection == correctionOnly;
+      final matchesQuery =
+          rawQuery.isEmpty || exam.title.toLowerCase().contains(query);
+      final matchesCorrection =
+          correctionOnly == null || exam.hasCorrection == correctionOnly;
       return matchesQuery && matchesCorrection;
     }).toList();
   });

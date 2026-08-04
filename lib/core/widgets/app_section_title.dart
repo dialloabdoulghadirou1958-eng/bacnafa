@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../app/theme/app_text_styles.dart';
+import '../../app/theme/app_colors.dart';
 import '../../core/design/app_spacing.dart';
 
 class AppSectionTitle extends StatelessWidget {
@@ -24,6 +25,7 @@ class AppSectionTitle extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   title,
@@ -33,13 +35,18 @@ class AppSectionTitle extends StatelessWidget {
                   SizedBox(height: AppSpacing.xs),
                   Text(
                     subtitle!,
-                    style: AppTextStyles.bodySmall,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ],
             ),
           ),
-          action ?? const SizedBox.shrink(),
+          if (action != null) ...[
+            SizedBox(width: AppSpacing.sm),
+            action!,
+          ],
         ],
       ),
     );
