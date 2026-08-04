@@ -33,9 +33,7 @@ jobs:
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
             "platforms;android-34" \
-            "build-tools;34.0.0" \
-            "cmake;3.22.1" \
-            "ndk;25.1.8937393"
+            "build-tools;34.0.0"
 
       - name: Configure Android
         run: |
@@ -43,8 +41,6 @@ jobs:
 
           echo "android.builder.sdkDownload=false" >> android/gradle.properties
           echo "android.nonTransitiveRClass=false" >> android/gradle.properties
-
-          find /home/runner/.pub-cache/ -name "build.gradle*" -exec sed -i 's/jcenter()/mavenCentral()/g' {} +
 
       - name: Setup Gradle cache
         uses: actions/cache@v4
