@@ -25,18 +25,18 @@ android {
         versionName = flutter.versionName
     }
 
-    buildTypes {
-        release {
-            signingConfig = signingConfigs.getByName("release")
-        }
-    }
-
     signingConfigs {
         create("release") {
             storeFile = file("android/app/debug.keystore")
             storePassword = (findProperty("storePassword") as? String) ?: System.getenv("KEYSTORE_PASS") ?: "android"
             keyAlias = (findProperty("keyAlias") as? String) ?: System.getenv("KEY_ALIAS") ?: "androiddebugkey"
             keyPassword = (findProperty("keyPassword") as? String) ?: System.getenv("KEY_PASS") ?: "android"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }
