@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/app/theme/app_text_styles.dart';
 import 'package:bac_nafa/core/widgets/app_card_premium.dart';
-import 'package:bac_nafa/features/library/domain/models/library_models.dart';
 import 'package:bac_nafa/features/library/providers/library_providers.dart';
 import 'package:go_router/go_router.dart';
 
@@ -32,12 +31,10 @@ class LibraryPage extends ConsumerWidget {
                   ...favorites.map((item) => Padding(
                         padding: const EdgeInsets.only(bottom: 10),
                         child: _LibraryItem(
-                          icon: item.type == FavoriteType.subject ? Icons.description_rounded : Icons.psychology_rounded,
+                          icon: Icons.description_rounded,
                           title: item.title,
-                          subtitle: item.type == FavoriteType.subject ? 'Sujet sauvegardé' : 'Conversation IA',
-                          onTap: () => context.push(
-                            item.type == FavoriteType.subject ? '/exam/${item.itemId}' : '/ai',
-                          ),
+                          subtitle: 'Sujet sauvegardé',
+                          onTap: () => context.push('/exam/${item.itemId}'),
                         ),
                       )),
                 _SectionHeader(icon: Icons.history_rounded, title: 'Historique récent', count: history.length),

@@ -1,4 +1,4 @@
-package com.example.bac_nafa
+package com.bacnafa.app
 
 import io.flutter.embedding.android.FlutterActivity
 

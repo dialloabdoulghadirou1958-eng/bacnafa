@@ -10,8 +10,6 @@ import 'package:bac_nafa/features/subjects/presentation/pages/years_page.dart';
 import 'package:bac_nafa/features/subjects/presentation/pages/exam_papers_page.dart';
 import 'package:bac_nafa/features/exam_viewer/presentation/pages/exam_viewer_page.dart';
 import 'package:bac_nafa/features/library/presentation/pages/library_page.dart';
-import 'package:bac_nafa/features/ai_assistant/presentation/pages/ai_chat_page.dart';
-import 'package:bac_nafa/features/ai_assistant/presentation/pages/ai_history_page.dart';
 import 'package:bac_nafa/features/profile/presentation/pages/profile_screen.dart';
 import 'package:bac_nafa/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:bac_nafa/features/auth/presentation/pages/login_page.dart';
@@ -87,16 +85,6 @@ final goRouter = GoRouter(
           path: '/library',
           pageBuilder: (context, state) =>
               AppPageTransitions.fadeThrough(child: const LibraryPage(), state: state),
-        ),
-        GoRoute(
-          path: '/ai',
-          pageBuilder: (context, state) =>
-              AppPageTransitions.slideFromRight(child: const AIChatPage(), state: state),
-        ),
-        GoRoute(
-          path: '/assistant/history',
-          pageBuilder: (context, state) =>
-              AppPageTransitions.slideFromRight(child: const AIHistoryPage(), state: state),
         ),
         GoRoute(
           path: '/quiz/:id',

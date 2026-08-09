@@ -10,9 +10,9 @@ class AppTheme {
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.dark,
     statusBarBrightness: Brightness.light,
-    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarColor: AppColors.surfaceContainerLow,
     systemNavigationBarIconBrightness: Brightness.dark,
-    systemNavigationBarDividerColor: Colors.transparent,
+    systemNavigationBarDividerColor: AppColors.borderSubtle,
   );
 
   static ThemeData get lightTheme {

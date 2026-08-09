@@ -77,7 +77,6 @@ class HomePage extends ConsumerWidget {
                 ),
                 SizedBox(height: AppSpacing.lg),
 
-                _AIAssistantCard(onTap: () => context.push(AppRoutes.ai)),
                 SizedBox(height: AppSpacing.xxl),
               ],
             ),
@@ -322,62 +321,3 @@ class _RecentExamCard extends StatelessWidget {
   }
 }
 
-class _AIAssistantCard extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const _AIAssistantCard({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return AppCardPremium(
-      onTap: onTap,
-      padding: const EdgeInsets.all(24),
-      shadows: AppShadows.medium,
-      border: AppBorders.subtle,
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.tertiaryContainer,
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.2), width: 1),
-            ),
-            child: const Icon(Icons.psychology_rounded, size: 40, color: AppColors.tertiary),
-          ),
-          SizedBox(height: AppSpacing.md),
-          Text(
-            'Besoin d\'aide ?',
-            style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.w700),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: AppSpacing.xs),
-          Text(
-            'Notre IA analyse tes sujets et t\'explique chaque étape en détail.',
-            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: AppSpacing.md),
-          SizedBox(
-            width: double.infinity,
-            height: 54,
-            child: ElevatedButton.icon(
-              onPressed: onTap,
-              icon: const Icon(Icons.chat_bubble_rounded, size: 20),
-              label: const Text('Demander à l\'IA'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.tertiary,
-                foregroundColor: AppColors.onTertiary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.button),
-                ),
-                elevation: 0,
-                textStyle: AppTextStyles.buttonText,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

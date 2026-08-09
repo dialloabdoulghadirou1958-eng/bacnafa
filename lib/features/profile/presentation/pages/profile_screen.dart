@@ -59,14 +59,6 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Expanded(
-                    child: _StatTile(
-                      icon: Icons.psychology_rounded,
-                      label: 'IA Aide',
-                      value: '12',
-                      color: AppColors.tertiary,
-                    ),
-                  ),
                 ],
               ),
               SizedBox(height: AppSpacing.lg),

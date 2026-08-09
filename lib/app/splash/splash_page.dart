@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +22,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
   late final AnimationController _controller;
   late final Animation<double> _scale;
   late final Animation<double> _fade;
+  Timer? _launchTimer;
 
   @override
   void initState() {
@@ -44,13 +46,14 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
   @override
   void dispose() {
+    _launchTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }
 
-  void _checkLaunchStatus() async {
-    await Future.delayed(const Duration(seconds: 2));
-    if (!mounted) return;
+  void _checkLaunchStatus() {
+    _launchTimer = Timer(const Duration(seconds: 2), () {
+      if (!mounted) return;
 
     final isFirstLaunch = ref.read(isFirstLaunchProvider);
     final authStatus = ref.read(authStatusProvider);
@@ -62,6 +65,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
     } else {
       context.go(AppRoutes.login);
     }
+    });
   }
 
   @override

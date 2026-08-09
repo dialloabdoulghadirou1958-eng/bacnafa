@@ -36,7 +36,7 @@ class MainScaffold extends ConsumerWidget {
         bottomNavigationBar: AppBottomNavigation(
           currentIndex: navIndex,
           onItemSelected: (index) {
-            final routes = ['/home', '/subjects', '/ai', '/profile'];
+            final routes = ['/home', '/subjects', '/quiz/1', '/profile'];
             context.go(routes[index]);
           },
         ),
@@ -46,7 +46,7 @@ class MainScaffold extends ConsumerWidget {
 
   int _computeIndex(String location) {
     if (location.startsWith('/subjects')) return 1;
-    if (location.startsWith('/ai')) return 2;
+    if (location.startsWith('/quiz')) return 2;
     if (location.startsWith('/profile')) return 3;
     return 0;
   }

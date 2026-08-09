@@ -35,9 +35,9 @@ class AppBottomNavigation extends StatelessWidget {
           label: 'Sujets',
         ),
         NavigationDestination(
-          icon: Icon(Icons.auto_awesome, size: 24),
-          selectedIcon: Icon(Icons.auto_awesome, size: 26),
-          label: 'Assist.',
+          icon: Icon(Icons.quiz_rounded, size: 24),
+          selectedIcon: Icon(Icons.quiz, size: 26),
+          label: 'Quiz',
         ),
         NavigationDestination(
           icon: Icon(Icons.person_rounded, size: 24),
