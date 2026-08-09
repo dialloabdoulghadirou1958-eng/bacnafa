@@ -11,6 +11,10 @@ final quizzesProvider = FutureProvider<List<Quiz>>((ref) {
   return repo.getQuizzes();
 });
 
+final quizzesCountProvider = Provider<AsyncValue<int>>((ref) {
+  return ref.watch(quizzesProvider).whenData((quizzes) => quizzes.length);
+});
+
 final quizByIdProvider = FutureProvider.family<Quiz?, String>((ref, id) async {
   final quizzes = await ref.watch(quizzesProvider.future);
   try {
