@@ -6,8 +6,10 @@ import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/app/theme/app_text_styles.dart';
 import 'package:bac_nafa/core/design/app_spacing.dart';
 import 'package:bac_nafa/core/design/app_radius.dart';
+import 'package:bac_nafa/core/design/app_shadows.dart';
+import 'package:bac_nafa/core/design/app_borders.dart';
 import 'package:bac_nafa/core/providers/mock_providers.dart';
-import 'package:bac_nafa/features/library/providers/library_providers.dart';
+import 'package:bac_nafa/core/widgets/app_card_premium.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -16,65 +18,67 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
     final subjects = ref.watch(subjectsProvider);
-    final history = ref.watch(historyProvider);
 
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          _HomeHeader(user: user),
+          _HomeSliverAppBar(user: user),
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate.fixed([
-                _SectionTitle(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+            sliver: SliverList.list(
+              children: [
+                _SectionHeader(
                   title: 'Matières',
-                  subtitle: '${subjects.length} matières du Bac',
+                  subtitle: 'Explorer les sujets',
                   action: 'Voir tout',
                   onAction: () => context.push(AppRoutes.subjects),
                 ),
                 SizedBox(height: AppSpacing.sm),
-                ...subjects.map((subject) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: _SubjectRow(
-                    title: subject.name,
-                    subtitle: subject.description,
-                    icon: subject.icon,
-                    color: subject.color,
-                    progress: subject.progress,
-                    onTap: () => context.push(AppRoutes.subjects),
+                SizedBox(
+                  height: 124,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    itemCount: subjects.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 12),
+                    itemBuilder: (context, index) {
+                      final subject = subjects[index];
+                      return _SubjectCard(
+                        title: subject.name,
+                        icon: subject.icon,
+                        color: subject.color,
+                        progress: subject.progress,
+                        onTap: () => context.push(AppRoutes.subjects),
+                      );
+                    },
                   ),
-                )),
+                ),
                 SizedBox(height: AppSpacing.lg),
 
-                _SectionTitle(
+                _SectionHeader(
                   title: 'Reprendre',
                   subtitle: 'Mes dernières consultations',
-                  action: history.isNotEmpty ? 'Bibliothèque' : null,
-                  onAction: () => context.push('/library'),
                 ),
                 SizedBox(height: AppSpacing.sm),
-                if (history.isEmpty)
-                  const _EmptyHint(
-                    message: 'Tes derniers sujets consultés apparaîtront ici.',
-                    icon: Icons.history_rounded,
-                  )
-                else
-                  ...history.take(5).map((item) => Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: _RecentRow(
-                      title: item.title,
-                      subtitle: '${item.subjectName} • ${item.year}',
-                      onTap: () => context.push('/exam/${item.itemId}'),
-                    ),
-                  )),
+                _RecentExamCard(
+                  subject: 'Mathématiques',
+                  year: 'BAC 2026',
+                  series: 'Science Maths',
+                  hasCorrection: true,
+                  onTap: () {},
+                ),
+                SizedBox(height: AppSpacing.sm),
+                _RecentExamCard(
+                  subject: 'Physique-Chimie',
+                  year: 'BAC 2025',
+                  series: 'Sciences Expér.',
+                  hasCorrection: false,
+                  onTap: () {},
+                ),
                 SizedBox(height: AppSpacing.lg),
 
-                _QuizAccessCard(
-                  count: subjects.length,
-                  onTap: () => context.push('/quiz/1'),
-                ),
                 SizedBox(height: AppSpacing.xxl),
-              ]),
+              ],
             ),
           ),
         ],
@@ -83,42 +87,55 @@ class HomePage extends ConsumerWidget {
   }
 }
 
-class _HomeHeader extends StatelessWidget {
+class _HomeSliverAppBar extends StatelessWidget {
   final dynamic user;
-  const _HomeHeader({required this.user});
+  const _HomeSliverAppBar({required this.user});
 
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      pinned: true,
-      expandedHeight: 0,
-      scrolledUnderElevation: 1,
-      surfaceTintColor: Colors.transparent,
-      automaticallyImplyLeading: false,
       title: Text(
         'BacNafa',
         style: AppTextStyles.headlineLarge.copyWith(fontWeight: FontWeight.w800),
       ),
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [AppColors.primary, AppColors.tertiary],
+      centerTitle: false,
+      pinned: true,
+      floating: false,
+      snap: false,
+      expandedHeight: 0,
+      scrolledUnderElevation: 1,
+      surfaceTintColor: Colors.transparent,
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: GestureDetector(
+            onTap: () => context.push(AppRoutes.profile),
+            child: Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: AppColors.primaryContainer,
+                borderRadius: BorderRadius.circular(AppRadius.circular),
+                border: Border.all(color: AppColors.borderSubtle, width: 1),
+              ),
+              child: Center(
+                child: Icon(Icons.person_rounded, color: AppColors.primary, size: 22),
+              ),
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 }
 
-class _SectionTitle extends StatelessWidget {
+class _SectionHeader extends StatelessWidget {
   final String title;
   final String subtitle;
   final String? action;
   final VoidCallback? onAction;
 
-  const _SectionTitle({
+  const _SectionHeader({
     required this.title,
     required this.subtitle,
     this.action,
@@ -128,7 +145,6 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Expanded(
           child: Column(
@@ -136,10 +152,7 @@ class _SectionTitle extends StatelessWidget {
             children: [
               Text(title, style: AppTextStyles.headlineSmall),
               const SizedBox(height: 2),
-              Text(
-                subtitle,
-                style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
-              ),
+              Text(subtitle, style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary)),
             ],
           ),
         ),
@@ -162,17 +175,15 @@ class _SectionTitle extends StatelessWidget {
   }
 }
 
-class _SubjectRow extends StatelessWidget {
+class _SubjectCard extends StatelessWidget {
   final String title;
-  final String subtitle;
   final IconData icon;
   final Color color;
   final double progress;
   final VoidCallback onTap;
 
-  const _SubjectRow({
+  const _SubjectCard({
     required this.title,
-    required this.subtitle,
     required this.icon,
     required this.color,
     required this.progress,
@@ -181,51 +192,44 @@ class _SubjectRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(AppRadius.medium),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          child: Row(
+    return GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        width: 160,
+        child: AppCardPremium(
+          padding: const EdgeInsets.all(16),
+          shadows: AppShadows.medium,
+          border: AppBorders.subtle,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 44,
-                height: 44,
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
                 ),
-                child: Icon(icon, color: color, size: 22),
+                child: Icon(icon, color: color, size: 24),
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w700),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(AppRadius.xs),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        minHeight: 4,
-                        backgroundColor: AppColors.surfaceContainer,
-                        valueColor: AlwaysStoppedAnimation<Color>(color),
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 12),
+              Text(
+                title,
+                style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w700),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 4,
+                  backgroundColor: AppColors.surfaceContainer,
+                  valueColor: AlwaysStoppedAnimation<Color>(color),
+                  borderRadius: BorderRadius.circular(4),
                 ),
               ),
-              const SizedBox(width: 10),
-              Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary, size: 22),
             ],
           ),
         ),
@@ -234,148 +238,86 @@ class _SubjectRow extends StatelessWidget {
   }
 }
 
-class _RecentRow extends StatelessWidget {
-  final String title;
-  final String subtitle;
+class _RecentExamCard extends StatelessWidget {
+  final String subject;
+  final String year;
+  final String series;
+  final bool hasCorrection;
   final VoidCallback onTap;
 
-  const _RecentRow({
-    required this.title,
-    required this.subtitle,
+  const _RecentExamCard({
+    required this.subject,
+    required this.year,
+    required this.series,
+    required this.hasCorrection,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(AppRadius.medium),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          child: Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: AppColors.primaryContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(Icons.description_rounded, color: AppColors.primary, size: 22),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w600),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: AppTextStyles.labelSmall,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary, size: 22),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _EmptyHint extends StatelessWidget {
-  final String message;
-  final IconData icon;
-
-  const _EmptyHint({required this.message, required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainer,
-        borderRadius: BorderRadius.circular(AppRadius.medium),
-      ),
+    return AppCardPremium(
+      onTap: onTap,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      shadows: AppShadows.soft,
+      border: AppBorders.subtle,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: AppColors.textTertiary, size: 20),
-          const SizedBox(width: 8),
-          Text(message, style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textTertiary)),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.primaryContainer,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.borderSubtle, width: 1),
+            ),
+            child: const Icon(Icons.description_rounded, color: AppColors.primary, size: 22),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(subject, style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w700)),
+                const SizedBox(height: 2),
+                Text('$year • $series', style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+              ],
+            ),
+          ),
+          if (hasCorrection)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: AppColors.successContainer,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.success.withValues(alpha: 0.3), width: 1),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.check_circle_rounded, color: AppColors.success, size: 14),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Corrigé',
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.success),
+                  ),
+                ],
+              ),
+            )
+          else
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.borderSubtle, width: 1),
+              ),
+              child: Text(
+                'Sans correction',
+                style: AppTextStyles.caption.copyWith(color: AppColors.textTertiary),
+              ),
+            ),
         ],
       ),
     );
   }
 }
 
-class _QuizAccessCard extends StatelessWidget {
-  final int count;
-  final VoidCallback onTap;
-
-  const _QuizAccessCard({required this.count, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.tertiary,
-      borderRadius: BorderRadius.circular(AppRadius.large),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.onTertiary.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Icon(Icons.quiz_rounded, color: AppColors.onTertiary, size: 28),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'S\'entraîner avec le Quiz',
-                      style: AppTextStyles.titleLarge.copyWith(
-                        color: AppColors.onTertiary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Teste tes connaissances et suis ta progression',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.onTertiary.withValues(alpha: 0.85),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(Icons.arrow_forward_rounded, color: AppColors.onTertiary, size: 24),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
