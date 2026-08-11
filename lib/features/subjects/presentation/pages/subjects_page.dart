@@ -89,7 +89,7 @@ class _SubjectModernCard extends StatelessWidget {
             child: Opacity(
               opacity: 0.06,
               child: SvgPicture.asset(
-                subject.svgAsset ?? 'assets/subjects/default.svg',
+                subject.svgAsset ?? 'assets/subjects/education.svg',
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
                   accent,
