@@ -3,6 +3,8 @@ class AppRoutes {
 
   static const home = '/home';
   static const subjects = '/subjects';
+  static String series(String yearId) => '/subjects/$yearId/series';
+  static String subjectsOf(String yearId, String seriesId) => '/subjects/$yearId/series/$seriesId/subjects';
   static const profile = '/profile';
   static const login = '/login';
   static const register = '/register';

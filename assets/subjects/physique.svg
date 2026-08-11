@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none">
+  <g stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.22">
+    <path d="M 40 95 L 40 30 L 80 30 L 80 95 Z"/>
+    <path d="M 80 95 L 80 45 L 120 45 L 120 95 Z"/>
+    <path d="M 40 95 L 120 95"/>
+    <path d="M 52 95 L 52 78 L 68 78 L 68 95"/>
+    <line x1="40" y1="65" x2="80" y2="65"/>
+    <line x1="80" y1="80" x2="120" y2="80"/>
+  </g>
+  <g stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.18" fill="none">
+    <circle cx="155" cy="55" r="14"/>
+    <circle cx="155" cy="55" r="7"/>
+    <path d="M 155 41 L 155 28"/>
+    <path d="M 155 69 L 155 82"/>
+    <path d="M 169 55 L 182 55"/>
+    <path d="M 141 55 L 128 55"/>
+    <circle cx="155" cy="100" r="9"/>
+    <path d="M 150 95 L 155 88 L 160 95 Z" fill="white"/>
+  </g>
+</svg>

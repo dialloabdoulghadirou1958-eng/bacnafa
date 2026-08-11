@@ -12,7 +12,6 @@ import 'package:bac_nafa/core/design/app_borders.dart';
 import 'package:bac_nafa/core/services/auth_actions.dart';
 import 'package:bac_nafa/core/services/library_counts.dart';
 import 'package:bac_nafa/core/widgets/app_card_premium.dart';
-import 'package:bac_nafa/core/widgets/app_progress_indicator.dart';
 import 'package:bac_nafa/core/providers/mock_providers.dart';
 import 'package:bac_nafa/features/quiz/providers/quiz_providers.dart';
 import 'package:go_router/go_router.dart';
@@ -51,7 +50,7 @@ class ProfileScreen extends ConsumerWidget {
               sliver: SliverList(
                 delegate: SliverChildListDelegate.fixed([
                   _ProfileHeader(user: user),
-                  SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: 20),
 
                   Row(
                     children: [
@@ -86,57 +85,141 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: 16),
 
                   AppCardPremium(
-                    padding: const EdgeInsets.all(20),
-                    shadows: AppShadows.soft,
+                    padding: const EdgeInsets.all(16),
+                    shadows: AppShadows.subtle,
                     border: AppBorders.subtle,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.trending_up_rounded, color: AppColors.primary, size: 22),
-                            const SizedBox(width: 8),
-                            Text('Progression', style: AppTextStyles.headlineSmall),
+                            Container(
+                              padding: const EdgeInsets.all(7),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(9),
+                              ),
+                              child: const Icon(
+                                Icons.trending_up_rounded,
+                                color: AppColors.primary,
+                                size: 17,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              'Progression',
+                              style: AppTextStyles.titleLarge.copyWith(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 17,
+                              ),
+                            ),
+                            const Spacer(),
+                            TweenAnimationBuilder<double>(
+                              tween: Tween(begin: 0, end: user.progress),
+                              duration: const Duration(milliseconds: 600),
+                              curve: Curves.easeOutCubic,
+                              builder: (context, value, child) {
+                                return Text(
+                                  '${(value * 100).toInt()}%',
+                                  style: AppTextStyles.titleSmall.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                );
+                              },
+                            ),
                           ],
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          'Ton avancement global vers le Bac',
-                          style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 44),
+                          child: Text(
+                            'Avancement global vers le Bac',
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textTertiary,
+                              fontSize: 12,
+                            ),
+                          ),
                         ),
-                        const SizedBox(height: 16),
-                        AppProgressIndicator(
-                          label: 'Préparation Bac',
-                          progress: user.progress,
+                        const SizedBox(height: 12),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(AppRadius.circular),
+                          child: TweenAnimationBuilder<double>(
+                            tween: Tween(begin: 0, end: user.progress),
+                            duration: const Duration(milliseconds: 600),
+                            curve: Curves.easeOutCubic,
+                            builder: (context, value, child) {
+                              return LinearProgressIndicator(
+                                value: value,
+                                minHeight: 8,
+                                backgroundColor: AppColors.surfaceContainer,
+                                valueColor: const AlwaysStoppedAnimation<Color>(
+                                    AppColors.primary),
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: 12),
 
                   AppCardPremium(
-                    padding: const EdgeInsets.all(20),
-                    shadows: AppShadows.soft,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
+                    shadows: AppShadows.subtle,
                     border: AppBorders.subtle,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.info_outline_rounded, color: AppColors.primary, size: 22),
-                            const SizedBox(width: 8),
-                            Text('Informations', style: AppTextStyles.headlineSmall),
+                            Container(
+                              padding: const EdgeInsets.all(7),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(9),
+                              ),
+                              child: const Icon(
+                                Icons.info_outline_rounded,
+                                color: AppColors.primary,
+                                size: 17,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              'Informations',
+                              style: AppTextStyles.titleLarge.copyWith(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 17,
+                              ),
+                            ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        _DetailRow(label: 'Série', value: user.bacSeries, icon: Icons.category_rounded),
-                        Divider(height: 28, color: AppColors.borderSubtle),
-                        _DetailRow(label: 'Année du Bac', value: '${user.bacYear}', icon: Icons.calendar_month_rounded),
-                        Divider(height: 28, color: AppColors.borderSubtle),
-                        _DetailRow(label: 'ID Étudiant', value: user.id, icon: Icons.badge_rounded),
+                        const SizedBox(height: 12),
+                        _DetailRow(
+                            label: 'Série',
+                            value: user.bacSeries,
+                            icon: Icons.category_rounded),
+                        Divider(
+                            height: 16,
+                            thickness: 0.8,
+                            color: AppColors.borderSubtle),
+                        _DetailRow(
+                            label: 'Année du Bac',
+                            value: '${user.bacYear}',
+                            icon: Icons.calendar_month_rounded),
+                        Divider(
+                            height: 16,
+                            thickness: 0.8,
+                            color: AppColors.borderSubtle),
+                        _DetailRow(
+                            label: 'ID Étudiant',
+                            value: user.id,
+                            icon: Icons.badge_rounded),
                       ],
                     ),
                   ),
@@ -228,37 +311,45 @@ class _ProfileHeader extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            width: 96,
-            height: 96,
+            width: 80,
+            height: 80,
             decoration: BoxDecoration(
               color: AppColors.primaryContainer,
               borderRadius: BorderRadius.circular(AppRadius.circular),
-              border: Border.all(color: AppColors.primary.withValues(alpha: 0.2), width: 2),
+              border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.2), width: 2),
             ),
-            child: Icon(Icons.person_rounded, size: 48, color: AppColors.primary),
+            child: const Icon(Icons.person_rounded,
+                size: 40, color: AppColors.primary),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           Text(
             user.name,
-            style: AppTextStyles.displayMedium.copyWith(fontWeight: FontWeight.w700),
+            style: AppTextStyles.headlineLarge.copyWith(
+              fontWeight: FontWeight.w700,
+              fontSize: 22,
+            ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
             decoration: BoxDecoration(
               color: AppColors.secondaryContainer,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.secondary.withValues(alpha: 0.2), width: 1),
+              borderRadius: BorderRadius.circular(13),
+              border: Border.all(
+                  color: AppColors.secondary.withValues(alpha: 0.2),
+                  width: 1),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.school_rounded, size: 16, color: AppColors.secondary),
-                const SizedBox(width: 6),
+                Icon(Icons.school_rounded,
+                    size: 14, color: AppColors.secondary),
+                const SizedBox(width: 5),
                 Text(
                   'Élève en ${user.bacSeries} • ${user.bacYear}',
-                  style: TextStyle(
-                    fontSize: 13,
+                  style: const TextStyle(
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: AppColors.onSecondaryContainer,
                   ),
@@ -288,29 +379,30 @@ class _StatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppCardPremium(
-      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 10),
-      shadows: AppShadows.soft,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+      shadows: AppShadows.subtle,
       border: AppBorders.subtle,
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: color, size: 22),
+            child: Icon(icon, color: color, size: 18),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Text(
             value,
-            style: AppTextStyles.titleLarge.copyWith(color: color, fontWeight: FontWeight.w800),
+            style: AppTextStyles.titleLarge.copyWith(
+                color: color, fontWeight: FontWeight.w800, fontSize: 20),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 1),
           Text(
             label,
-            style: AppTextStyles.labelSmall.copyWith(color: AppColors.textSecondary),
+            style: AppTextStyles.labelSmall.copyWith(
+                color: AppColors.textTertiary, fontSize: 10),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -333,22 +425,26 @@ class _DetailRow extends StatelessWidget {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
             color: AppColors.primaryContainer,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppColors.borderSubtle, width: 1),
+            borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: AppColors.primary, size: 20),
+          child: Icon(icon, color: AppColors.primary, size: 16),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 10),
         Expanded(
-          child: Text(label, style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textSecondary)),
+          child: Text(label,
+              style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.textTertiary, fontSize: 13)),
         ),
         Flexible(
           child: Text(
             value,
-            style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w700),
+            style: AppTextStyles.bodyMedium.copyWith(
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+                color: AppColors.textPrimary),
             textAlign: TextAlign.right,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

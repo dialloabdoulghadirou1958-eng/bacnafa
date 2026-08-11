@@ -13,7 +13,7 @@ import 'package:bac_nafa/features/library/presentation/pages/library_page.dart';
 import 'package:bac_nafa/features/profile/presentation/pages/profile_screen.dart';
 import 'package:bac_nafa/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:bac_nafa/features/auth/presentation/pages/login_page.dart';
-import 'package:bac_nafa/features/auth/presentation/pages/register_page.dart';
+
 import 'package:bac_nafa/features/quiz/presentation/pages/quiz_page.dart';
 import 'package:bac_nafa/features/quiz/providers/quiz_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,7 +39,7 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/register',
       pageBuilder: (context, state) =>
-          AppPageTransitions.slideUp(child: const RegisterPage(), state: state),
+          AppPageTransitions.slideUp(child: const LoginPage(), state: state),
     ),
     ShellRoute(
       builder: (context, state, child) {
@@ -54,17 +54,19 @@ final goRouter = GoRouter(
         GoRoute(
           path: '/subjects',
           pageBuilder: (context, state) =>
-              AppPageTransitions.fadeThrough(child: const SubjectsPage(), state: state),
+              AppPageTransitions.fadeThrough(child: const YearsPageAsYears(), state: state),
         ),
         GoRoute(
-          path: '/subjects/:subjectId/series',
-          pageBuilder: (context, state) =>
-              AppPageTransitions.slideFromRight(child: const SeriesPage(), state: state),
+          path: '/subjects/:yearId/series',
+          pageBuilder: (context, state) {
+            final yearId = state.pathParameters['yearId'] ?? '';
+            return AppPageTransitions.slideFromRight(child: SeriesPageAsSeries(yearId: yearId), state: state);
+          },
         ),
         GoRoute(
-          path: '/subjects/:subjectId/series/:seriesId/years',
+          path: '/subjects/:yearId/series/:seriesId/subjects',
           pageBuilder: (context, state) =>
-              AppPageTransitions.slideFromRight(child: const YearsPage(), state: state),
+              AppPageTransitions.slideFromRight(child: const SubjectsPageAsSubjects(), state: state),
         ),
         GoRoute(
           path: '/exams',
