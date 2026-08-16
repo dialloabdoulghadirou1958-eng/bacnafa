@@ -81,8 +81,7 @@ jobs:
       # ANCIEN: Build APK (ARM64) sans signature intégrée
       # run: flutter build apk --release --target-platform android-arm64
       - name: Build APK (ARM64)
-        run: flutter build apk --release --target-platform android-arm64 --no-shrink
-        # Note: compilation et signature via keystore local (debug) sans secrets GitHub
+        run: flutter build apk --release --target-platform android-arm64
 
       # ANCIEN: Restore keystore from secret
       # run: |

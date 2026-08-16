@@ -376,7 +376,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(25),
                           child: Image.asset(
-                            'assets/branding/app_icon.jpg',
+                            'assets/branding/app_icon.png',
                             fit: BoxFit.cover,
                           ),
                         ),

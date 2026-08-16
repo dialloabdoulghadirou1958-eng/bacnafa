@@ -41,67 +41,85 @@ final goRouter = GoRouter(
       pageBuilder: (context, state) =>
           AppPageTransitions.slideUp(child: const LoginPage(), state: state),
     ),
-    ShellRoute(
-      builder: (context, state, child) {
-        return MainScaffold(child: child);
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) {
+        return MainScaffold(navigationShell: navigationShell);
       },
-      routes: [
-        GoRoute(
-          path: '/home',
-          pageBuilder: (context, state) =>
-              AppPageTransitions.scaleFade(child: const HomePage(), state: state),
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/home',
+              pageBuilder: (context, state) =>
+                  AppPageTransitions.scaleFade(child: const HomePage(), state: state),
+            ),
+          ],
         ),
-        GoRoute(
-          path: '/subjects',
-          pageBuilder: (context, state) =>
-              AppPageTransitions.fadeThrough(child: const YearsPageAsYears(), state: state),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/subjects',
+              pageBuilder: (context, state) =>
+                  AppPageTransitions.fadeThrough(child: const YearsPageAsYears(), state: state),
+            ),
+            GoRoute(
+              path: '/subjects/:yearId/series',
+              pageBuilder: (context, state) {
+                final yearId = state.pathParameters['yearId'] ?? '';
+                return AppPageTransitions.slideFromRight(
+                    child: SeriesPageAsSeries(yearId: yearId), state: state);
+              },
+            ),
+            GoRoute(
+              path: '/subjects/:yearId/series/:seriesId/subjects',
+              pageBuilder: (context, state) =>
+                  AppPageTransitions.slideFromRight(child: const SubjectsPageAsSubjects(), state: state),
+            ),
+            GoRoute(
+              path: '/exams',
+              pageBuilder: (context, state) =>
+                  AppPageTransitions.slideFromRight(child: const ExamPapersPage(), state: state),
+            ),
+            GoRoute(
+              path: '/exam/:id',
+              pageBuilder: (context, state) {
+                final id = state.pathParameters['id'] ?? '';
+                return AppPageTransitions.slideFromRight(
+                  child: ExamViewerPage(examId: id),
+                  state: state,
+                );
+              },
+            ),
+            GoRoute(
+              path: '/library',
+              pageBuilder: (context, state) =>
+                  AppPageTransitions.fadeThrough(child: const LibraryPage(), state: state),
+            ),
+          ],
         ),
-        GoRoute(
-          path: '/subjects/:yearId/series',
-          pageBuilder: (context, state) {
-            final yearId = state.pathParameters['yearId'] ?? '';
-            return AppPageTransitions.slideFromRight(child: SeriesPageAsSeries(yearId: yearId), state: state);
-          },
+        StatefulShellBranch(
+          initialLocation: '/quiz/1',
+          routes: [
+            GoRoute(
+              path: '/quiz/:id',
+              pageBuilder: (context, state) {
+                final id = state.pathParameters['id'] ?? '1';
+                return AppPageTransitions.slideUp(
+                  child: ProviderScope(child: _QuizPageWrapper(quizId: id)),
+                  state: state,
+                );
+              },
+            ),
+          ],
         ),
-        GoRoute(
-          path: '/subjects/:yearId/series/:seriesId/subjects',
-          pageBuilder: (context, state) =>
-              AppPageTransitions.slideFromRight(child: const SubjectsPageAsSubjects(), state: state),
-        ),
-        GoRoute(
-          path: '/exams',
-          pageBuilder: (context, state) =>
-              AppPageTransitions.slideFromRight(child: const ExamPapersPage(), state: state),
-        ),
-        GoRoute(
-          path: '/exam/:id',
-          pageBuilder: (context, state) {
-            final id = state.pathParameters['id'] ?? '';
-            return AppPageTransitions.slideFromRight(
-              child: ExamViewerPage(examId: id),
-              state: state,
-            );
-          },
-        ),
-        GoRoute(
-          path: '/library',
-          pageBuilder: (context, state) =>
-              AppPageTransitions.fadeThrough(child: const LibraryPage(), state: state),
-        ),
-        GoRoute(
-          path: '/quiz/:id',
-          pageBuilder: (context, state) {
-            final id = state.pathParameters['id'] ?? '1';
-            return AppPageTransitions.slideUp(
-              child: ProviderScope(child: _QuizPageWrapper(quizId: id)),
-              state: state,
-            );
-          },
-        ),
-        GoRoute(
-          path: '/profile',
-          pageBuilder: (context, state) =>
-              AppPageTransitions.fadeThrough(child: const ProfileScreen(), state: state),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/profile',
+              pageBuilder: (context, state) =>
+                  AppPageTransitions.fadeThrough(child: const ProfileScreen(), state: state),
+            ),
+          ],
         ),
       ],
     ),
