@@ -5,10 +5,10 @@ import 'package:bac_nafa/app/routes.dart';
 import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/app/theme/app_text_styles.dart';
 import 'package:bac_nafa/core/design/app_radius.dart';
-
-import 'package:bac_nafa/core/design/app_shadows.dart';
-import 'package:bac_nafa/core/design/app_borders.dart';
+import 'package:bac_nafa/core/providers/mock_providers.dart';
 import 'package:bac_nafa/core/widgets/app_card_premium.dart';
+import 'package:bac_nafa/core/widgets/app_responsive.dart';
+import 'package:bac_nafa/features/subjects/domain/models/bac_year.dart';
 import 'package:bac_nafa/features/subjects/presentation/providers/subjects_providers.dart';
 
 class YearsPageAsYears extends ConsumerWidget {
@@ -17,124 +17,230 @@ class YearsPageAsYears extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final yearsAsync = ref.watch(yearsListProvider);
+    final user = ref.watch(currentUserProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Année du Bac'),
-        scrolledUnderElevation: 1,
-      ),
+      appBar: AppBar(title: const Text('Sujets du Bac')),
       body: yearsAsync.when(
-        data: (years) => ListView.builder(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-          itemCount: years.length,
-          itemBuilder: (context, index) {
-            final y = years[index];
-            return TweenAnimationBuilder<double>(
-              duration: Duration(milliseconds: 350 + (index * 60).clamp(0, 300)),
-              tween: Tween(begin: 0.0, end: 1.0),
-              curve: Curves.easeOutCubic,
-              builder: (context, value, child) {
-                return Transform.translate(
-                  offset: Offset(0, 30 * (1 - value)),
-                  child: Opacity(opacity: value, child: child),
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 14),
-                child: _YearGlassCard(
-                  year: y.year,
-                  onTap: () {
-                    ref.read(selectedYearProvider.notifier).set(y);
-                    context.push(AppRoutes.series(y.id));
-                  },
-                ),
+        data: (years) => SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.only(bottom: 32),
+          child: AppResponsiveContent(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppPageIntro(
+                    eyebrow: 'Bibliothèque de sujets',
+                    title: 'Choisis ton année',
+                    description:
+                        'Retrouve les épreuves et corrections qui correspondent à ton objectif.',
+                    icon: Icons.calendar_month_rounded,
+                    accent: AppColors.primary,
+                    trailing: _IntroBadge(
+                      label: 'Cible ${user.bacYear}',
+                      icon: Icons.flag_rounded,
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  AppSectionHeading(
+                    title: 'Années disponibles',
+                    subtitle: '${years.length} sessions à explorer',
+                  ),
+                  const SizedBox(height: 14),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: years.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 360,
+                          mainAxisExtent: 136,
+                          crossAxisSpacing: 14,
+                          mainAxisSpacing: 14,
+                        ),
+                    itemBuilder: (context, index) {
+                      final year = years[index];
+                      return _AnimatedEntry(
+                        index: index,
+                        child: _YearCard(
+                          year: year,
+                          isCurrent: year.year == user.bacYear,
+                          onTap: () {
+                            ref.read(selectedYearProvider.notifier).set(year);
+                            context.push(AppRoutes.series(year.id));
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
-            );
-          },
-        ),
-        loading: () => const Center(child: CircularProgressIndicator(strokeWidth: 2.5)),
-        error: (err, _) => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.error_outline, color: AppColors.error, size: 48),
-              const SizedBox(height: 12),
-              Text('Erreur', style: AppTextStyles.bodyMedium),
-            ],
+            ),
           ),
         ),
+        loading: () =>
+            const Center(child: CircularProgressIndicator(strokeWidth: 2.5)),
+        error: (error, _) => _SubjectsError(message: '$error'),
       ),
     );
   }
 }
 
-class _YearGlassCard extends StatelessWidget {
-  final int year;
+class _YearCard extends StatelessWidget {
+  final BacYear year;
+  final bool isCurrent;
   final VoidCallback onTap;
 
-  const _YearGlassCard({required this.year, required this.onTap});
+  const _YearCard({
+    required this.year,
+    required this.isCurrent,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return AppCardPremium(
-      padding: EdgeInsets.zero,
-      shadows: AppShadows.premium,
-      border: AppBorders.none,
       onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppRadius.dialog),
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF5A54E8), Color(0xFF8B5CF6)],
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: isCurrent
+                    ? [AppColors.primary, AppColors.secondary]
+                    : [
+                        AppColors.surfaceContainer,
+                        AppColors.surfaceContainerHigh,
+                      ],
+              ),
+              borderRadius: BorderRadius.circular(AppRadius.medium),
+            ),
+            child: Icon(
+              Icons.school_rounded,
+              color: isCurrent ? Colors.white : AppColors.primary,
+              size: 25,
+            ),
           ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'BAC ${year.year}',
+                  style: AppTextStyles.titleLarge.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  isCurrent ? 'Ton année cible' : 'Voir les épreuves',
+                  style: AppTextStyles.bodySmall,
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            Icons.arrow_forward_rounded,
+            color: isCurrent ? AppColors.primary : AppColors.textTertiary,
+            size: 20,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _IntroBadge extends StatelessWidget {
+  final String label;
+  final IconData icon;
+
+  const _IntroBadge({required this.label, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.white, size: 15),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: AppTextStyles.labelSmall.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AnimatedEntry extends StatelessWidget {
+  final int index;
+  final Widget child;
+
+  const _AnimatedEntry({required this.index, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: Duration(milliseconds: 380 + (index * 65).clamp(0, 300)),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) => Opacity(
+        opacity: value,
+        child: Transform.translate(
+          offset: Offset(0, 18 * (1 - value)),
+          child: child,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-        child: Row(
+      ),
+      child: child,
+    );
+  }
+}
+
+class _SubjectsError extends StatelessWidget {
+  final String message;
+
+  const _SubjectsError({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.25), width: 1),
-              ),
-              child: const Icon(Icons.school_rounded, color: Colors.white, size: 26),
+            const Icon(
+              Icons.cloud_off_rounded,
+              color: AppColors.error,
+              size: 44,
             ),
-            const SizedBox(width: 18),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'BAC $year',
-                    style: AppTextStyles.headlineSmall.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 22,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Sélectionne cette année pour continuer',
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: Colors.white.withValues(alpha: 0.75),
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ),
+            const SizedBox(height: 12),
+            Text(
+              'Impossible de charger les sujets',
+              style: AppTextStyles.titleMedium,
             ),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
-              ),
-              child: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 22),
+            const SizedBox(height: 4),
+            Text(
+              message,
+              style: AppTextStyles.bodySmall,
+              textAlign: TextAlign.center,
             ),
           ],
         ),

@@ -13,38 +13,47 @@ class AppBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NavigationBar(
-      selectedIndex: currentIndex,
-      onDestinationSelected: onItemSelected,
-      backgroundColor: AppColors.surface,
-      indicatorColor: AppColors.primaryContainer,
-      surfaceTintColor: Colors.transparent,
-      shadowColor: Colors.black.withValues(alpha: 0.08),
-      elevation: 1,
-      height: 72,
-      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-      destinations: const [
-        NavigationDestination(
-          icon: Icon(Icons.home_rounded, size: 24),
-          selectedIcon: Icon(Icons.home, size: 26),
-          label: 'Accueil',
+    return SafeArea(
+      top: false,
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          border: Border(top: BorderSide(color: AppColors.borderSubtle)),
         ),
-        NavigationDestination(
-          icon: Icon(Icons.menu_book_rounded, size: 24),
-          selectedIcon: Icon(Icons.menu_book, size: 26),
-          label: 'Sujets',
+        child: NavigationBar(
+          selectedIndex: currentIndex,
+          onDestinationSelected: onItemSelected,
+          backgroundColor: Colors.transparent,
+          indicatorColor: AppColors.primaryContainer,
+          surfaceTintColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          elevation: 0,
+          height: 72,
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home_rounded),
+              selectedIcon: Icon(Icons.home_rounded),
+              label: 'Accueil',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.menu_book_rounded),
+              selectedIcon: Icon(Icons.menu_book_rounded),
+              label: 'Sujets',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.quiz_rounded),
+              selectedIcon: Icon(Icons.quiz_rounded),
+              label: 'Quiz',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person_rounded),
+              selectedIcon: Icon(Icons.person_rounded),
+              label: 'Profil',
+            ),
+          ],
         ),
-        NavigationDestination(
-          icon: Icon(Icons.quiz_rounded, size: 24),
-          selectedIcon: Icon(Icons.quiz, size: 26),
-          label: 'Quiz',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.person_rounded, size: 24),
-          selectedIcon: Icon(Icons.person, size: 26),
-          label: 'Profil',
-        ),
-      ],
+      ),
     );
   }
 }

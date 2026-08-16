@@ -15,6 +15,15 @@ class AppTheme {
     systemNavigationBarDividerColor: AppColors.borderSubtle,
   );
 
+  static const SystemUiOverlayStyle lightOnDarkStatusBar = SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.light,
+    statusBarBrightness: Brightness.dark,
+    systemNavigationBarColor: AppColors.surfaceContainerLow,
+    systemNavigationBarIconBrightness: Brightness.dark,
+    systemNavigationBarDividerColor: AppColors.borderSubtle,
+  );
+
   static ThemeData get lightTheme {
     final colorScheme = AppColors.lightColorScheme;
 
@@ -107,9 +116,7 @@ class AppTheme {
         backgroundColor: colorScheme.primaryContainer,
         foregroundColor: colorScheme.onPrimaryContainer,
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
 
       cardTheme: CardThemeData(
@@ -117,17 +124,13 @@ class AppTheme {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),
 
       chipTheme: ChipThemeData(
         backgroundColor: colorScheme.surfaceContainerHighest,
         labelStyle: AppTextStyles.labelMedium,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         side: BorderSide.none,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
@@ -181,9 +184,7 @@ class AppTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: colorScheme.surface,
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         titleTextStyle: AppTextStyles.headlineSmall,
       ),
 
@@ -201,9 +202,7 @@ class AppTheme {
           color: colorScheme.onInverseSurface,
         ),
         behavior: SnackBarBehavior.fixed,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         showCloseIcon: true,
       ),
 
@@ -220,9 +219,7 @@ class AppTheme {
       popupMenuTheme: PopupMenuThemeData(
         color: colorScheme.surfaceContainer,
         elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         textStyle: AppTextStyles.titleSmall,
       ),
 
@@ -239,9 +236,7 @@ class AppTheme {
       ),
 
       pageTransitionsTheme: const PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-        },
+        builders: {TargetPlatform.android: FadeUpwardsPageTransitionsBuilder()},
       ),
     );
   }
@@ -284,7 +279,10 @@ class _SlideTransition extends StatelessWidget {
     const curve = Curves.easeOutCubic;
 
     final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-    final opacityTween = Tween(begin: 0.0, end: 1.0).chain(CurveTween(curve: Curves.easeOut));
+    final opacityTween = Tween(
+      begin: 0.0,
+      end: 1.0,
+    ).chain(CurveTween(curve: Curves.easeOut));
 
     return SlideTransition(
       position: animation.drive(tween),

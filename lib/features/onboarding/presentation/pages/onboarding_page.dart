@@ -28,14 +28,16 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
     _PageData(
       icon: Icons.psychology_rounded,
       title: 'Prépare ton Bac',
-      subtitle: 'BacNafa est ton hub intelligent de sujets, corrections et explications pour réussir ton examen.',
+      subtitle:
+          'BacNafa est ton hub intelligent de sujets, corrections et explications pour réussir ton examen.',
       color: AppColors.primary,
       accent: AppColors.tertiary,
     ),
     _PageData(
       icon: Icons.menu_book_rounded,
       title: 'Choisis ta filière',
-      subtitle: 'Sélectionne ta série pour accéder aux sujets adaptés à ton parcours.',
+      subtitle:
+          'Sélectionne ta série pour accéder aux sujets adaptés à ton parcours.',
       color: AppColors.secondary,
       accent: AppColors.primary,
     ),
@@ -93,104 +95,126 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
     final data = ref.watch(onboardingProvider);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: AppTheme.lightStatusBar,
+      value: AppTheme.lightOnDarkStatusBar,
       child: Scaffold(
         body: Stack(
-        children: [
-          Positioned.fill(
-            child: _AnimatedGradient(
-              listenable: _gradientAnimation,
-              startColor: _current.color,
-              endColor: _current.accent,
+          children: [
+            Positioned.fill(
+              child: _AnimatedGradient(
+                listenable: _gradientAnimation,
+                startColor: _current.color,
+                endColor: _current.accent,
+              ),
             ),
-          ),
-          Positioned.fill(
-            child: _DecorativeCircles(color: _current.color),
-          ),
-          SafeArea(
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 56,
-                  child: Row(
-                    children: [
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 200),
-                        child: _currentPage > 0
-                            ? IconButton(
-                                key: const ValueKey('back'),
-                                icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-                                onPressed: () => _goToPage(_currentPage - 1),
-                              )
-                            : const SizedBox.shrink(key: ValueKey('none')),
-                      ),
-                      const Spacer(),
-                      if (_currentPage < _pages.length - 1)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 12),
-                          child: TextButton(
-                            onPressed: _nextPage,
-                            style: TextButton.styleFrom(foregroundColor: Colors.white),
-                            child: const Text('Passer'),
-                          ),
+            Positioned.fill(child: _DecorativeCircles(color: _current.color)),
+            SafeArea(
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 56,
+                    child: Row(
+                      children: [
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 200),
+                          child: _currentPage > 0
+                              ? IconButton(
+                                  key: const ValueKey('back'),
+                                  icon: const Icon(
+                                    Icons.arrow_back_rounded,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () => _goToPage(_currentPage - 1),
+                                )
+                              : const SizedBox.shrink(key: ValueKey('none')),
                         ),
-                    ],
+                        const Spacer(),
+                        if (_currentPage < _pages.length - 1)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: TextButton(
+                              onPressed: _nextPage,
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.white,
+                              ),
+                              child: const Text('Passer'),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: PageView(
-                    controller: _pageController,
-                    physics: const BouncingScrollPhysics(),
-                    onPageChanged: (i) => setState(() => _currentPage = i),
-                    children: [
-                      _IntroPage(page: _pages[0]),
-                      _SelectionPage(
-                        page: _pages[1],
-                        title: 'Ton niveau',
-                        options: const ['Terminale'],
-                        selectedValue: data.selectedClass.isEmpty ? null : data.selectedClass,
-                        onSelect: (v) => ref.read(onboardingProvider.notifier).updateClass(v),
-                      ),
-                      _SeriesSelectionPage(
-                        page: _pages[2],
-                        title: 'Ta série',
-                        series: const [
-                          _SerieItem('Sciences Mathématiques', Icons.functions_rounded),
-                          _SerieItem('Sciences Expérimentales', Icons.biotech_rounded),
-                          _SerieItem('Sciences Sociales', Icons.people_rounded),
-                        ],
-                        selectedValue: data.selectedSeries.isEmpty ? null : data.selectedSeries,
-                        onSelect: (v) => ref.read(onboardingProvider.notifier).updateSeries(v),
-                      ),
-                    ],
+                  Expanded(
+                    child: PageView(
+                      controller: _pageController,
+                      physics: const BouncingScrollPhysics(),
+                      onPageChanged: (i) => setState(() => _currentPage = i),
+                      children: [
+                        _IntroPage(page: _pages[0]),
+                        _SelectionPage(
+                          page: _pages[1],
+                          title: 'Ton niveau',
+                          options: const ['Terminale'],
+                          selectedValue: data.selectedClass.isEmpty
+                              ? null
+                              : data.selectedClass,
+                          onSelect: (v) => ref
+                              .read(onboardingProvider.notifier)
+                              .updateClass(v),
+                        ),
+                        _SeriesSelectionPage(
+                          page: _pages[2],
+                          title: 'Ta série',
+                          series: const [
+                            _SerieItem(
+                              'Sciences Mathématiques',
+                              Icons.functions_rounded,
+                            ),
+                            _SerieItem(
+                              'Sciences Expérimentales',
+                              Icons.biotech_rounded,
+                            ),
+                            _SerieItem(
+                              'Sciences Sociales',
+                              Icons.people_rounded,
+                            ),
+                          ],
+                          selectedValue: data.selectedSeries.isEmpty
+                              ? null
+                              : data.selectedSeries,
+                          onSelect: (v) => ref
+                              .read(onboardingProvider.notifier)
+                              .updateSeries(v),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-                  child: Column(
-                    children: [
-                      OnboardingIndicator(
-                        currentIndex: _currentPage,
-                        totalPages: _pages.length,
-                        activeColor: Colors.white,
-                        inactiveColor: Colors.white.withValues(alpha: 0.3),
-                      ),
-                      const SizedBox(height: 20),
-                      _AnimatedContinueButton(
-                        label: _currentPage == _pages.length - 1 ? 'Commencer' : 'Continuer',
-                        color: _current.color,
-                        onPressed: _nextPage,
-                      ),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+                    child: Column(
+                      children: [
+                        OnboardingIndicator(
+                          currentIndex: _currentPage,
+                          totalPages: _pages.length,
+                          activeColor: Colors.white,
+                          inactiveColor: Colors.white.withValues(alpha: 0.3),
+                        ),
+                        const SizedBox(height: 20),
+                        _AnimatedContinueButton(
+                          label: _currentPage == _pages.length - 1
+                              ? 'Commencer'
+                              : 'Continuer',
+                          color: _current.color,
+                          onPressed: _nextPage,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
   }
 }
 
@@ -287,7 +311,10 @@ class _IntroPage extends StatelessWidget {
             const SizedBox(height: 32),
             Text(
               page.title,
-              style: AppTextStyles.displayMedium.copyWith(color: Colors.white, fontSize: 30),
+              style: AppTextStyles.displayMedium.copyWith(
+                color: Colors.white,
+                fontSize: 30,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 14),
@@ -430,11 +457,21 @@ class _PageHeader extends StatelessWidget {
           child: Icon(page.icon, color: Colors.white, size: 36),
         ),
         const SizedBox(height: 20),
-        Text(title, style: AppTextStyles.displayMedium.copyWith(color: Colors.white, fontSize: 26)),
+        Text(
+          title,
+          style: AppTextStyles.displayMedium.copyWith(
+            color: Colors.white,
+            fontSize: 26,
+          ),
+        ),
         const SizedBox(height: 8),
         Text(
           page.subtitle,
-          style: TextStyle(fontSize: 14, color: Colors.white.withValues(alpha: 0.75), height: 1.4),
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.white.withValues(alpha: 0.75),
+            height: 1.4,
+          ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -465,17 +502,25 @@ class _OnboardingCard extends StatelessWidget {
         curve: Curves.easeOutCubic,
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.12),
+          color: isSelected
+              ? Colors.white
+              : Colors.white.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(AppRadius.large),
           border: Border.all(
-            color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.25),
+            color: isSelected
+                ? Colors.white
+                : Colors.white.withValues(alpha: 0.25),
             width: isSelected ? 2 : 1,
           ),
         ),
         child: Row(
           children: [
             if (icon != null) ...[
-              Icon(icon, color: isSelected ? accentColor : Colors.white70, size: 24),
+              Icon(
+                icon,
+                color: isSelected ? accentColor : Colors.white70,
+                size: 24,
+              ),
               const SizedBox(width: 14),
             ],
             Expanded(
@@ -491,7 +536,12 @@ class _OnboardingCard extends StatelessWidget {
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
               child: isSelected
-                  ? Icon(Icons.check_circle_rounded, key: const ValueKey('check'), color: accentColor, size: 24)
+                  ? Icon(
+                      Icons.check_circle_rounded,
+                      key: const ValueKey('check'),
+                      color: accentColor,
+                      size: 24,
+                    )
                   : const SizedBox.shrink(key: ValueKey('empty')),
             ),
           ],

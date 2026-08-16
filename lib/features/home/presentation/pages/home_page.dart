@@ -4,12 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:bac_nafa/app/routes.dart';
 import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/app/theme/app_text_styles.dart';
-import 'package:bac_nafa/core/design/app_spacing.dart';
+import 'package:bac_nafa/app/theme/app_theme.dart';
+import 'package:bac_nafa/core/design/app_borders.dart';
 import 'package:bac_nafa/core/design/app_radius.dart';
 import 'package:bac_nafa/core/design/app_shadows.dart';
-import 'package:bac_nafa/core/design/app_borders.dart';
+import 'package:bac_nafa/core/models/subject.dart';
 import 'package:bac_nafa/core/providers/mock_providers.dart';
 import 'package:bac_nafa/core/widgets/app_card_premium.dart';
+import 'package:bac_nafa/core/widgets/app_responsive.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -21,64 +23,53 @@ class HomePage extends ConsumerWidget {
 
     return Scaffold(
       body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
         slivers: [
-          _HomeSliverAppBar(user: user),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-            sliver: SliverList.list(
-              children: [
-                _SectionHeader(
-                  title: 'Matières',
-                  subtitle: 'Explorer les sujets',
-                  action: 'Voir tout',
-                  onAction: () => context.push(AppRoutes.subjects),
+          _HomeHero(userName: user.name, progress: user.progress),
+          SliverToBoxAdapter(
+            child: AppResponsiveContent(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 24, 0, 36),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _QuickStartCard(
+                      onTap: () => context.push(AppRoutes.subjects),
+                    ),
+                    const SizedBox(height: 30),
+                    AppSectionHeading(
+                      title: 'Tes matières',
+                      subtitle: 'Continue là où tu t’es arrêté',
+                      actionLabel: 'Tout voir',
+                      onAction: () => context.push(AppRoutes.subjects),
+                    ),
+                    const SizedBox(height: 14),
+                    _SubjectCollection(
+                      subjects: subjects,
+                      onTap: () => context.push(AppRoutes.subjects),
+                    ),
+                    const SizedBox(height: 30),
+                    AppSectionHeading(
+                      title: 'Reprendre une session',
+                      subtitle: 'Tes dernières consultations',
+                    ),
+                    const SizedBox(height: 14),
+                    const _RecentExamCard(
+                      subject: 'Mathématiques',
+                      year: 'BAC 2026',
+                      series: 'Sciences Mathématiques',
+                      hasCorrection: true,
+                    ),
+                    const SizedBox(height: 12),
+                    const _RecentExamCard(
+                      subject: 'Physique-Chimie',
+                      year: 'BAC 2025',
+                      series: 'Sciences Expérimentales',
+                      hasCorrection: false,
+                    ),
+                  ],
                 ),
-                SizedBox(height: AppSpacing.sm),
-                SizedBox(
-                  height: 124,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
-                    itemCount: subjects.length,
-                    separatorBuilder: (_, _) => const SizedBox(width: 12),
-                    itemBuilder: (context, index) {
-                      final subject = subjects[index];
-                      return _SubjectCard(
-                        title: subject.name,
-                        icon: subject.icon,
-                        color: subject.color,
-                        progress: subject.progress,
-                        onTap: () => context.push(AppRoutes.subjects),
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(height: AppSpacing.lg),
-
-                _SectionHeader(
-                  title: 'Reprendre',
-                  subtitle: 'Mes dernières consultations',
-                ),
-                SizedBox(height: AppSpacing.sm),
-                _RecentExamCard(
-                  subject: 'Mathématiques',
-                  year: 'BAC 2026',
-                  series: 'Science Maths',
-                  hasCorrection: true,
-                  onTap: () {},
-                ),
-                SizedBox(height: AppSpacing.sm),
-                _RecentExamCard(
-                  subject: 'Physique-Chimie',
-                  year: 'BAC 2025',
-                  series: 'Sciences Expér.',
-                  hasCorrection: false,
-                  onTap: () {},
-                ),
-                SizedBox(height: AppSpacing.lg),
-
-                SizedBox(height: AppSpacing.xxl),
-              ],
+              ),
             ),
           ),
         ],
@@ -87,152 +78,366 @@ class HomePage extends ConsumerWidget {
   }
 }
 
-class _HomeSliverAppBar extends StatelessWidget {
-  final dynamic user;
-  const _HomeSliverAppBar({required this.user});
+class _HomeHero extends StatelessWidget {
+  final String userName;
+  final double progress;
+
+  const _HomeHero({required this.userName, required this.progress});
 
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
+      pinned: true,
+      expandedHeight: 292,
+      backgroundColor: AppColors.primary,
+      foregroundColor: Colors.white,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      systemOverlayStyle: AppTheme.lightOnDarkStatusBar,
       title: Text(
         'BacNafa',
-        style: AppTextStyles.headlineLarge.copyWith(fontWeight: FontWeight.w800),
+        style: AppTextStyles.titleLarge.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.w800,
+        ),
       ),
-      centerTitle: false,
-      pinned: true,
-      floating: false,
-      snap: false,
-      expandedHeight: 0,
-      scrolledUnderElevation: 1,
-      surfaceTintColor: Colors.transparent,
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 16),
-          child: GestureDetector(
-            onTap: () => context.push(AppRoutes.profile),
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: AppColors.primaryContainer,
-                borderRadius: BorderRadius.circular(AppRadius.circular),
-                border: Border.all(color: AppColors.borderSubtle, width: 1),
-              ),
-              child: Center(
-                child: Icon(Icons.person_rounded, color: AppColors.primary, size: 22),
-              ),
+          child: IconButton.filledTonal(
+            onPressed: () => context.push(AppRoutes.profile),
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.white.withValues(alpha: 0.16),
+              foregroundColor: Colors.white,
             ),
+            icon: const Icon(Icons.person_rounded, size: 21),
+            tooltip: 'Mon profil',
           ),
         ),
       ],
+      flexibleSpace: FlexibleSpaceBar(
+        collapseMode: CollapseMode.parallax,
+        background: Stack(
+          children: [
+            const Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF312E81),
+                      Color(0xFF4F46E5),
+                      Color(0xFF0E7490),
+                    ],
+                    stops: [0, 0.58, 1],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: -82,
+              right: -48,
+              child: _HeroOrb(
+                size: 220,
+                color: Colors.white.withValues(alpha: 0.08),
+              ),
+            ),
+            Positioned(
+              bottom: -96,
+              left: -84,
+              child: _HeroOrb(
+                size: 230,
+                color: Colors.black.withValues(alpha: 0.08),
+              ),
+            ),
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 84, 24, 20),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 1020),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'BONJOUR, ${userName.split(' ').first.toUpperCase()} 👋',
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: Colors.white.withValues(alpha: 0.72),
+                            letterSpacing: 1.2,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 7),
+                        Text(
+                          'Prêt à faire\nprogresser ton Bac ?',
+                          style: AppTextStyles.displaySmall.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                            height: 1.08,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        _ProgressSummary(progress: progress),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final String? action;
-  final VoidCallback? onAction;
+class _ProgressSummary extends StatelessWidget {
+  final double progress;
 
-  const _SectionHeader({
-    required this.title,
-    required this.subtitle,
-    this.action,
-    this.onAction,
-  });
+  const _ProgressSummary({required this.progress});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: AppTextStyles.headlineSmall),
-              const SizedBox(height: 2),
-              Text(subtitle, style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary)),
-            ],
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 13),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.13),
+        borderRadius: BorderRadius.circular(AppRadius.medium),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.insights_rounded, color: Colors.white, size: 19),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Progression globale',
+                  style: AppTextStyles.labelMedium.copyWith(
+                    color: Colors.white.withValues(alpha: 0.78),
+                  ),
+                ),
+                const SizedBox(height: 7),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0, end: progress),
+                    duration: const Duration(milliseconds: 900),
+                    curve: Curves.easeOutCubic,
+                    builder: (context, value, _) => LinearProgressIndicator(
+                      value: value,
+                      minHeight: 7,
+                      backgroundColor: Colors.white.withValues(alpha: 0.18),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
+          const SizedBox(width: 14),
+          Text(
+            '${(progress * 100).round()}%',
+            style: AppTextStyles.titleMedium.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _QuickStartCard extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _QuickStartCard({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCardPremium(
+      onTap: onTap,
+      padding: EdgeInsets.zero,
+      shadows: AppShadows.medium,
+      border: AppBorders.none,
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppColors.surface, AppColors.primaryContainer],
+          ),
+          borderRadius: BorderRadius.circular(AppRadius.card),
         ),
-        if (action != null)
-          TextButton(
-            onPressed: onAction,
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.primary,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        child: Row(
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(AppRadius.medium),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.25),
+                    blurRadius: 14,
+                    offset: const Offset(0, 7),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.play_arrow_rounded,
+                color: Colors.white,
+                size: 28,
+              ),
             ),
-            child: Text(
-              action!,
-              style: AppTextStyles.labelLarge.copyWith(fontWeight: FontWeight.w700),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Objectif du jour', style: AppTextStyles.labelLarge),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Lance une nouvelle session de révision',
+                    style: AppTextStyles.titleMedium,
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: AppColors.primary,
+              size: 17,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SubjectCollection extends StatelessWidget {
+  final List<CoreSubject> subjects;
+  final VoidCallback onTap;
+
+  const _SubjectCollection({required this.subjects, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth >= 720) {
+          return GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: subjects.length,
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 240,
+              mainAxisExtent: 148,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+            ),
+            itemBuilder: (context, index) =>
+                _SubjectCard(subject: subjects[index], onTap: onTap),
+          );
+        }
+
+        return SizedBox(
+          height: 148,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            itemCount: subjects.length,
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
+            itemBuilder: (context, index) => SizedBox(
+              width: 188,
+              child: _SubjectCard(subject: subjects[index], onTap: onTap),
             ),
           ),
-      ],
+        );
+      },
     );
   }
 }
 
 class _SubjectCard extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final Color color;
-  final double progress;
+  final CoreSubject subject;
   final VoidCallback onTap;
 
-  const _SubjectCard({
-    required this.title,
-    required this.icon,
-    required this.color,
-    required this.progress,
-    required this.onTap,
-  });
+  const _SubjectCard({required this.subject, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return AppCardPremium(
       onTap: onTap,
-      child: SizedBox(
-        width: 160,
-        child: AppCardPremium(
-          padding: const EdgeInsets.all(16),
-          shadows: AppShadows.medium,
-          border: AppBorders.subtle,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.all(15),
+      shadows: AppShadows.soft,
+      border: AppBorders.subtle,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(9),
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
+                  color: subject.color.withValues(alpha: 0.13),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: color, size: 24),
+                child: Icon(subject.icon, color: subject.color, size: 22),
               ),
-              const SizedBox(height: 12),
+              const Spacer(),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textTertiary,
+                size: 20,
+              ),
+            ],
+          ),
+          const Spacer(),
+          Text(
+            subject.name,
+            style: AppTextStyles.titleSmall.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 9),
+          Row(
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: LinearProgressIndicator(
+                    value: subject.progress,
+                    minHeight: 5,
+                    backgroundColor: AppColors.surfaceContainer,
+                    valueColor: AlwaysStoppedAnimation<Color>(subject.color),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
               Text(
-                title,
-                style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w700),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
-                  value: progress,
-                  minHeight: 4,
-                  backgroundColor: AppColors.surfaceContainer,
-                  valueColor: AlwaysStoppedAnimation<Color>(color),
-                  borderRadius: BorderRadius.circular(4),
+                '${(subject.progress * 100).round()}%',
+                style: AppTextStyles.labelSmall.copyWith(
+                  color: subject.color,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
@@ -243,81 +448,125 @@ class _RecentExamCard extends StatelessWidget {
   final String year;
   final String series;
   final bool hasCorrection;
-  final VoidCallback onTap;
 
   const _RecentExamCard({
     required this.subject,
     required this.year,
     required this.series,
     required this.hasCorrection,
-    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return AppCardPremium(
-      onTap: onTap,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      onTap: () => context.push(AppRoutes.subjects),
+      padding: const EdgeInsets.all(16),
       shadows: AppShadows.soft,
       border: AppBorders.subtle,
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.primaryContainer,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.borderSubtle, width: 1),
-            ),
-            child: const Icon(Icons.description_rounded, color: AppColors.primary, size: 22),
-          ),
-          const SizedBox(width: 14),
+          const IconBadgeForRecent(),
+          const SizedBox(width: 13),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(subject, style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w700)),
-                const SizedBox(height: 2),
-                Text('$year • $series', style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+                Text(
+                  subject,
+                  style: AppTextStyles.titleMedium.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '$year  •  $series',
+                  style: AppTextStyles.bodySmall,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
-          if (hasCorrection)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: AppColors.successContainer,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.success.withValues(alpha: 0.3), width: 1),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.check_circle_rounded, color: AppColors.success, size: 14),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Corrigé',
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.success),
-                  ),
-                ],
-              ),
-            )
-          else
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.borderSubtle, width: 1),
-              ),
-              child: Text(
-                'Sans correction',
-                style: AppTextStyles.caption.copyWith(color: AppColors.textTertiary),
-              ),
-            ),
+          const SizedBox(width: 8),
+          _StatusPill(hasCorrection: hasCorrection),
         ],
       ),
     );
   }
 }
 
+class IconBadgeForRecent extends StatelessWidget {
+  const IconBadgeForRecent({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        color: AppColors.secondaryContainer,
+        borderRadius: BorderRadius.circular(13),
+      ),
+      child: const Icon(
+        Icons.description_rounded,
+        color: AppColors.secondary,
+        size: 22,
+      ),
+    );
+  }
+}
+
+class _StatusPill extends StatelessWidget {
+  final bool hasCorrection;
+
+  const _StatusPill({required this.hasCorrection});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = hasCorrection ? AppColors.success : AppColors.textTertiary;
+    final background = hasCorrection
+        ? AppColors.successContainer
+        : AppColors.surfaceContainer;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            hasCorrection ? Icons.check_circle_rounded : Icons.schedule_rounded,
+            color: color,
+            size: 14,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            hasCorrection ? 'Corrigé' : 'À revoir',
+            style: AppTextStyles.labelSmall.copyWith(
+              color: color,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeroOrb extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const _HeroOrb({required this.size, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+    );
+  }
+}
