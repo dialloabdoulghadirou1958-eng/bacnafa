@@ -5,6 +5,7 @@ class AppColors {
   AppColors._();
 
   static const Color primary = Color(0xFF4338CA);
+  static const Color primaryHighlight = Color(0xFF6366F1);
   static const Color onPrimary = Colors.white;
   static const Color primaryContainer = Color(0xFFE0E7FF);
   static const Color onPrimaryContainer = Color(0xFF1E1B4B);
@@ -20,6 +21,12 @@ class AppColors {
   static const Color tertiaryContainer = Color(0xFFEDE9FE);
   static const Color onTertiaryContainer = Color(0xFF3B1D7F);
   static const Color aiAccent = tertiary;
+
+  /// Shared tones for immersive headers and key calls to action.
+  static const Color heroDeep = Color(0xFF312E81);
+  static const Color heroMiddle = Color(0xFF4F46E5);
+  static const Color heroEnd = Color(0xFF0E7490);
+  static const Color surfaceGlow = Color(0xFFF5F7FF);
 
   static const Color error = Color(0xFFDC2626);
   static const Color onError = Colors.white;

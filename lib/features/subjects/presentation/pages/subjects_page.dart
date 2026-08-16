@@ -56,7 +56,7 @@ class SubjectsPageAsSubjects extends ConsumerWidget {
                     gridDelegate:
                         const SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 390,
-                          mainAxisExtent: 232,
+                          mainAxisExtent: 172,
                           crossAxisSpacing: 14,
                           mainAxisSpacing: 14,
                         ),
@@ -120,7 +120,7 @@ class _SubjectCard extends StatelessWidget {
               ),
             ),
             Container(
-              padding: const EdgeInsets.all(18),
+              padding: const EdgeInsets.all(13),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
@@ -137,8 +137,8 @@ class _SubjectCard extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        width: 52,
-                        height: 52,
+                        width: 40,
+                        height: 40,
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.18),
                           borderRadius: BorderRadius.circular(AppRadius.medium),
@@ -149,7 +149,7 @@ class _SubjectCard extends StatelessWidget {
                         child: Icon(
                           subject.icon,
                           color: Colors.white,
-                          size: 25,
+                          size: 20,
                         ),
                       ),
                       const Spacer(),
@@ -188,10 +188,10 @@ class _SubjectCard extends StatelessWidget {
                     style: AppTextStyles.bodySmall.copyWith(
                       color: Colors.white.withValues(alpha: 0.82),
                     ),
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
                   Row(
                     children: [
                       Text(

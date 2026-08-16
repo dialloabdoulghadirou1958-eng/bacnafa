@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/app/theme/app_text_styles.dart';
+import 'package:bac_nafa/core/design/app_radius.dart';
+import 'package:bac_nafa/core/design/app_shadows.dart';
 import 'package:bac_nafa/core/widgets/app_card_premium.dart';
 import 'package:bac_nafa/features/exam_viewer/models/exam_content.dart';
 
@@ -11,77 +13,144 @@ class ExamHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppCardPremium(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  exam.year,
-                  style: TextStyle(
-                    color: AppColors.onPrimaryContainer,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13,
+      padding: EdgeInsets.zero,
+      shadows: AppShadows.soft,
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppColors.surface, AppColors.primaryContainer.withValues(alpha: 0.52)],
+          ),
+          borderRadius: BorderRadius.circular(AppRadius.card),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [AppColors.primaryHighlight, AppColors.primary],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.20),
+                        blurRadius: 12,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.description_rounded,
+                    color: Colors.white,
+                    size: 20,
                   ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  exam.subjectName,
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
+                const SizedBox(width: 11),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        exam.subjectName.toUpperCase(),
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.9,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        exam.year,
+                        style: AppTextStyles.titleSmall.copyWith(
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface.withValues(alpha: 0.72),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.borderSubtle),
+                  ),
+                  child: Text(
+                    'Coef. ${exam.coefficient.toStringAsFixed(0)}',
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 15),
+            Text(
+              exam.title,
+              style: AppTextStyles.headlineSmall.copyWith(
+                fontWeight: FontWeight.w800,
               ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            exam.title,
-            style: AppTextStyles.headlineSmall,
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 16,
-            runSpacing: 8,
-            children: [
-              _Chip(label: 'Série', value: exam.series, icon: Icons.category_rounded),
-              _Chip(label: 'Session', value: exam.session, icon: Icons.schedule_rounded),
-              _Chip(label: 'Durée', value: exam.duration, icon: Icons.timer_rounded),
-              _Chip(label: 'Coefficient', value: exam.coefficient.toStringAsFixed(0), icon: Icons.speed_rounded),
-            ],
-          ),
-        ],
+            ),
+            const SizedBox(height: 14),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _Chip(value: exam.series, icon: Icons.category_rounded),
+                _Chip(value: exam.session, icon: Icons.schedule_rounded),
+                _Chip(value: exam.duration, icon: Icons.timer_rounded),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class _Chip extends StatelessWidget {
-  final String label;
   final String value;
   final IconData icon;
-  const _Chip({required this.label, required this.value, required this.icon});
+  const _Chip({required this.value, required this.icon});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: AppColors.textSecondary),
-        const SizedBox(width: 4),
-        Text('$label ', style: AppTextStyles.bodySmall),
-        Text(value, style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600)),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+          decoration: BoxDecoration(
+            color: AppColors.surface.withValues(alpha: 0.76),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppColors.borderSubtle),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 14, color: AppColors.primary),
+              const SizedBox(width: 5),
+              Text(
+                value,
+                style: AppTextStyles.labelSmall.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -97,19 +166,29 @@ class ExamSectionCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
           decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(10),
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                AppColors.primaryContainer,
+                AppColors.primaryContainer.withValues(alpha: 0.34),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.14),
+            ),
           ),
           child: Row(
             children: [
               Container(
-                width: 4,
-                height: 18,
+                width: 5,
+                height: 22,
                 decoration: BoxDecoration(
                   color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(3),
                 ),
               ),
               const SizedBox(width: 10),
@@ -117,8 +196,8 @@ class ExamSectionCard extends StatelessWidget {
                 child: Text(
                   section.title,
                   style: AppTextStyles.titleMedium.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w700,
+                        color: AppColors.onPrimaryContainer,
+                        fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -126,12 +205,12 @@ class ExamSectionCard extends StatelessWidget {
           ),
         ),
         if (section.content.isNotEmpty) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 5),
             child: Text(
               section.content,
-              style: AppTextStyles.bodyMedium.copyWith(height: 1.6),
+              style: AppTextStyles.bodyMedium.copyWith(height: 1.65),
             ),
           ),
         ],
@@ -152,26 +231,31 @@ class ExerciseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppCardPremium(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(17),
+      shadows: AppShadows.subtle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                width: 28,
-                height: 28,
+                width: 34,
+                height: 34,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryContainer,
-                  borderRadius: BorderRadius.circular(8),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [AppColors.primaryHighlight, AppColors.primary],
+                  ),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   '${exercise.number}',
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
-                    fontSize: 13,
-                    color: AppColors.onPrimaryContainer,
+                    fontSize: 14,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -179,21 +263,23 @@ class ExerciseCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   'Exercice ${exercise.number}',
-                  style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w700),
+                style: AppTextStyles.titleSmall.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceVariant,
-                  borderRadius: BorderRadius.circular(6),
+                  color: AppColors.warningContainer,
+                  borderRadius: BorderRadius.circular(9),
                 ),
                 child: Text(
                   '${exercise.points} pts',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: AppColors.onWarningContainer,
                   ),
                 ),
               ),
@@ -202,7 +288,7 @@ class ExerciseCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             exercise.statement,
-            style: AppTextStyles.bodyMedium.copyWith(height: 1.55),
+            style: AppTextStyles.bodyMedium.copyWith(height: 1.65),
           ),
           if (exercise.attachments.isNotEmpty) ...[
             const SizedBox(height: 12),
@@ -211,10 +297,13 @@ class ExerciseCard extends StatelessWidget {
               runSpacing: 6,
               children: exercise.attachments.map((att) {
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                   decoration: BoxDecoration(
                     color: AppColors.secondaryContainer,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: AppColors.secondary.withValues(alpha: 0.14),
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,

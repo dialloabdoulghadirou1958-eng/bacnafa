@@ -25,61 +25,76 @@ class AppSelectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final activeColor = color ?? AppColors.primary;
 
-    return AnimatedScale(
-      scale: isSelected ? 1.02 : 1.0,
-      duration: const Duration(milliseconds: 200),
-      child: GestureDetector(
-        onTap: onTap,
-        child: AppCardPremium(
-          padding: EdgeInsets.zero,
-          shadows: isSelected ? [
-            BoxShadow(
-              color: activeColor.withValues(alpha: 0.2),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            )
-          ] : null,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppRadius.large),
-              border: Border.all(
-                color: isSelected ? activeColor : AppColors.outline,
-                width: isSelected ? 2 : 1,
+    return AppCardPremium(
+      onTap: onTap,
+      padding: EdgeInsets.zero,
+      border: BorderSide(
+        color: isSelected ? activeColor : AppColors.outlineVariant,
+        width: isSelected ? 1.8 : 1,
+      ),
+      shadows: isSelected
+          ? [
+              BoxShadow(
+                color: activeColor.withValues(alpha: 0.20),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+                spreadRadius: -5,
+              ),
+            ]
+          : null,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        decoration: BoxDecoration(
+          color: isSelected ? activeColor.withValues(alpha: 0.045) : null,
+          borderRadius: BorderRadius.circular(AppRadius.large),
+        ),
+        padding: EdgeInsets.all(AppSpacing.md),
+        child: Row(
+          children: [
+            if (icon != null) ...[
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      activeColor.withValues(alpha: isSelected ? 0.18 : 0.11),
+                      activeColor.withValues(alpha: isSelected ? 0.09 : 0.05),
+                    ],
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  color: isSelected ? activeColor : AppColors.textSecondary,
+                  size: 22,
+                ),
+              ),
+              SizedBox(width: AppSpacing.md),
+            ],
+            Expanded(
+              child: Text(
+                title,
+                style: AppTextStyles.titleSmall.copyWith(
+                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                ),
               ),
             ),
-            padding: EdgeInsets.all(AppSpacing.md),
-            child: Row(
-              children: [
-                if (icon != null) ...[
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: isSelected ? activeColor.withValues(alpha: 0.1) : AppColors.background,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      icon,
-                      color: isSelected ? activeColor : AppColors.textSecondary,
-                      size: 22,
-                    ),
-                  ),
-                  SizedBox(width: AppSpacing.md),
-                ],
-                Expanded(
-                  child: Text(
-                    title,
-                    style: AppTextStyles.titleSmall.copyWith(
-                      color: isSelected ? AppColors.textPrimary : AppColors.textPrimary,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                    ),
-                  ),
+            AnimatedScale(
+              scale: isSelected ? 1 : 0.7,
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOutBack,
+              child: AnimatedOpacity(
+                opacity: isSelected ? 1 : 0,
+                duration: const Duration(milliseconds: 120),
+                child: Icon(
+                  Icons.check_circle_rounded,
+                  color: activeColor,
+                  size: 22,
                 ),
-                if (isSelected)
-                  Icon(Icons.check_circle, color: activeColor, size: 22),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

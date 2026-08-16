@@ -168,23 +168,46 @@ class _LibraryEmptySlot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainer,
-        borderRadius: BorderRadius.circular(AppRadius.medium),
-      ),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.folder_open_rounded,
-            color: AppColors.textTertiary,
-            size: 20,
+    return AppCardPremium(
+      padding: EdgeInsets.zero,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppColors.surface, AppColors.surfaceGlow],
           ),
-          const SizedBox(width: 10),
-          Expanded(child: Text(message, style: AppTextStyles.bodySmall)),
-        ],
+          borderRadius: BorderRadius.circular(AppRadius.card),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppColors.primaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.folder_open_rounded,
+                color: AppColors.primary,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.45,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -216,8 +239,16 @@ class _LibraryItem extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  color.withValues(alpha: 0.18),
+                  color.withValues(alpha: 0.08),
+                ],
+              ),
               borderRadius: BorderRadius.circular(13),
+              border: Border.all(color: color.withValues(alpha: 0.12)),
             ),
             child: Icon(icon, color: color, size: 21),
           ),
@@ -244,9 +275,18 @@ class _LibraryItem extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(
-            Icons.chevron_right_rounded,
-            color: AppColors.textTertiary,
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceContainer,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(
+              Icons.arrow_forward_rounded,
+              color: AppColors.textTertiary,
+              size: 17,
+            ),
           ),
         ],
       ),

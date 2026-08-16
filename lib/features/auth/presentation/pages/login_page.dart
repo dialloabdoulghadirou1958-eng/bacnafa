@@ -246,7 +246,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             if (isWide) {
               return Row(
                 children: [
-                  const Expanded(child: _LoginHero()),
+                  const Expanded(child: _LoginVisualPanel(child: _LoginHero())),
                   Expanded(
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
@@ -254,6 +254,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       child: _buildFormCard(
                         cityMissing: cityMissing,
                         isLoading: isLoading,
+                        compact: false,
                       ),
                     ),
                   ),
@@ -270,18 +271,24 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 ),
               ),
               child: SafeArea(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 28),
-                  child: Column(
-                    children: [
-                      const _LoginHero(compact: true),
-                      const SizedBox(height: 24),
-                      _buildFormCard(
-                        cityMissing: cityMissing,
-                        isLoading: isLoading,
-                      ),
-                    ],
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+                  child: LayoutBuilder(
+                    builder: (context, _) {
+                      return Column(
+                        children: [
+                          const _LoginHero(compact: true),
+                          const SizedBox(height: 12),
+                          Expanded(
+                            child: _buildFormCard(
+                              cityMissing: cityMissing,
+                              isLoading: isLoading,
+                              compact: true,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),
@@ -292,12 +299,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     );
   }
 
-  Widget _buildFormCard({required bool cityMissing, required bool isLoading}) {
+  Widget _buildFormCard({
+    required bool cityMissing,
+    required bool isLoading,
+    required bool compact,
+  }) {
     return AppResponsiveContent(
       maxWidth: 560,
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: compact
+          ? EdgeInsets.zero
+          : const EdgeInsets.symmetric(horizontal: 24),
       child: Container(
-        padding: const EdgeInsets.all(26),
+        padding: compact
+            ? const EdgeInsets.fromLTRB(18, 16, 18, 14)
+            : const EdgeInsets.all(26),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.dialog),
@@ -315,8 +330,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             Row(
               children: [
                 Container(
-                  width: 38,
-                  height: 38,
+                  width: compact ? 34 : 38,
+                  height: compact ? 34 : 38,
                   decoration: BoxDecoration(
                     color: AppColors.primaryContainer,
                     borderRadius: BorderRadius.circular(12),
@@ -334,7 +349,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     children: [
                       Text(
                         'Ton profil élève',
-                        style: AppTextStyles.headlineSmall,
+                        style: compact
+                            ? AppTextStyles.titleLarge
+                            : AppTextStyles.headlineSmall,
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -346,29 +363,32 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: compact ? 16 : 24),
             AppTextField(
               label: 'Prénom',
               hintText: 'Ex : Mariame',
               prefixIcon: Icons.person_outline_rounded,
               controller: _firstNameController,
               textCapitalization: TextCapitalization.words,
+              compact: compact,
               onChanged: (_) => setState(() {}),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: compact ? 10 : 16),
             AppTextField(
               label: 'Nom',
               hintText: 'Ex : Diallo',
               prefixIcon: Icons.person_outline_rounded,
               controller: _lastNameController,
               textCapitalization: TextCapitalization.words,
+              compact: compact,
               onChanged: (_) => setState(() {}),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: compact ? 10 : 16),
             _CityField(
               accent: AppColors.primary,
               selected: _selectedCity,
               hasError: cityMissing,
+              compact: compact,
               onTap: () async {
                 final selected = await showAppSelectionSheet(
                   context: context,
@@ -380,16 +400,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 if (selected != null) setState(() => _selectedCity = selected);
               },
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: compact ? 10 : 16),
             AppTextField(
               label: 'Nom du lycée (optionnel)',
               hintText: 'Ex : Lycée Donka',
               prefixIcon: Icons.school_outlined,
               controller: _schoolController,
               textCapitalization: TextCapitalization.words,
+              compact: compact,
               onChanged: (_) => setState(() {}),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: compact ? 14 : 24),
             AppPrimaryButton(
               text: 'Accéder aux révisions',
               icon: Icons.arrow_forward_rounded,
@@ -405,7 +426,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       });
                     },
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: compact ? 8 : 12),
             Text(
               'Tes informations restent privées et servent uniquement à adapter tes révisions.',
               style: AppTextStyles.caption,
@@ -418,6 +439,62 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 }
 
+class _LoginVisualPanel extends StatelessWidget {
+  final Widget child;
+
+  const _LoginVisualPanel({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF312E81), Color(0xFF4F46E5), Color(0xFF0E7490)],
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            top: -80,
+            right: -60,
+            child: _LoginOrb(
+              size: 220,
+              color: Colors.white.withValues(alpha: 0.08),
+            ),
+          ),
+          Positioned(
+            bottom: -100,
+            left: -80,
+            child: _LoginOrb(
+              size: 260,
+              color: Colors.black.withValues(alpha: 0.08),
+            ),
+          ),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _LoginOrb extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const _LoginOrb({required this.size, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+    );
+  }
+}
+
 class _LoginHero extends StatelessWidget {
   final bool compact;
 
@@ -425,7 +502,7 @@ class _LoginHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconSize = compact ? 84.0 : 116.0;
+    final iconSize = compact ? 66.0 : 116.0;
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: compact ? 12 : 48,
@@ -465,7 +542,7 @@ class _LoginHero extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: compact ? 16 : 28),
+          SizedBox(height: compact ? 8 : 28),
           Text(
             'Bienvenue sur\nBacNafa',
             textAlign: compact ? TextAlign.center : TextAlign.left,
@@ -473,15 +550,17 @@ class _LoginHero extends StatelessWidget {
               color: Colors.white,
               fontWeight: FontWeight.w800,
               height: 1.05,
+              fontSize: compact ? 26 : null,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: compact ? 7 : 12),
           Text(
             'Ton espace simple et motivant pour préparer le Bac à ton rythme.',
             textAlign: compact ? TextAlign.center : TextAlign.left,
             style: AppTextStyles.bodyLarge.copyWith(
               color: Colors.white.withValues(alpha: 0.80),
               height: 1.5,
+              fontSize: compact ? 14 : null,
             ),
           ),
           if (!compact) ...[
@@ -543,6 +622,7 @@ class _CityField extends StatelessWidget {
   final Color accent;
   final SelectionItem<void>? selected;
   final bool hasError;
+  final bool compact;
   final VoidCallback onTap;
 
   const _CityField({
@@ -550,6 +630,7 @@ class _CityField extends StatelessWidget {
     required this.selected,
     required this.onTap,
     this.hasError = false,
+    this.compact = false,
   });
 
   @override
@@ -571,7 +652,10 @@ class _CityField extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppRadius.medium),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            padding: EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: compact ? 10 : 14,
+            ),
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(AppRadius.medium),

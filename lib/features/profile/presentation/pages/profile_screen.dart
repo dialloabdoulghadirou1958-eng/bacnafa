@@ -34,7 +34,7 @@ class ProfileScreen extends ConsumerWidget {
           slivers: [
             SliverAppBar(
               pinned: true,
-              expandedHeight: 238,
+              expandedHeight: 202,
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               systemOverlayStyle: AppTheme.lightOnDarkStatusBar,
@@ -183,7 +183,7 @@ class _ProfileHero extends StatelessWidget {
           child: Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 88, 24, 22),
+              padding: const EdgeInsets.fromLTRB(24, 64, 24, 16),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1080),
                 child: Row(

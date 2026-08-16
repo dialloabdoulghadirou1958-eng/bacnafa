@@ -10,8 +10,10 @@ import 'package:bac_nafa/core/design/app_radius.dart';
 import 'package:bac_nafa/core/design/app_shadows.dart';
 import 'package:bac_nafa/core/models/subject.dart';
 import 'package:bac_nafa/core/providers/mock_providers.dart';
+import 'package:bac_nafa/core/services/library_counts.dart';
 import 'package:bac_nafa/core/widgets/app_card_premium.dart';
 import 'package:bac_nafa/core/widgets/app_responsive.dart';
+import 'package:bac_nafa/features/quiz/providers/quiz_providers.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -20,6 +22,10 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
     final subjects = ref.watch(subjectsProvider);
+    final favoritesCount = ref.watch(favoritesCountProvider);
+    final quizCount = ref
+        .watch(quizzesCountProvider)
+        .maybeWhen(data: (count) => count, orElse: () => 0);
 
     return Scaffold(
       body: CustomScrollView(
@@ -36,7 +42,20 @@ class HomePage extends ConsumerWidget {
                     _QuickStartCard(
                       onTap: () => context.push(AppRoutes.subjects),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 24),
+                    const AppSectionHeading(
+                      title: 'Ton plan de révision',
+                      subtitle: 'Des raccourcis pour avancer aujourd’hui',
+                    ),
+                    const SizedBox(height: 12),
+                    _DailyActions(
+                      favoritesCount: favoritesCount,
+                      quizCount: quizCount,
+                      onQuizTap: () => context.push(AppRoutes.quiz('1')),
+                      onSubjectsTap: () => context.push(AppRoutes.subjects),
+                      onLibraryTap: () => context.push('/library'),
+                    ),
+                    const SizedBox(height: 28),
                     AppSectionHeading(
                       title: 'Tes matières',
                       subtitle: 'Continue là où tu t’es arrêté',
@@ -48,24 +67,10 @@ class HomePage extends ConsumerWidget {
                       subjects: subjects,
                       onTap: () => context.push(AppRoutes.subjects),
                     ),
-                    const SizedBox(height: 30),
-                    AppSectionHeading(
-                      title: 'Reprendre une session',
-                      subtitle: 'Tes dernières consultations',
-                    ),
-                    const SizedBox(height: 14),
-                    const _RecentExamCard(
-                      subject: 'Mathématiques',
-                      year: 'BAC 2026',
-                      series: 'Sciences Mathématiques',
-                      hasCorrection: true,
-                    ),
-                    const SizedBox(height: 12),
-                    const _RecentExamCard(
-                      subject: 'Physique-Chimie',
-                      year: 'BAC 2025',
-                      series: 'Sciences Expérimentales',
-                      hasCorrection: false,
+                    const SizedBox(height: 28),
+                    _MotivationCard(
+                      progress: user.progress,
+                      onTap: () => context.push(AppRoutes.profile),
                     ),
                   ],
                 ),
@@ -88,7 +93,7 @@ class _HomeHero extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverAppBar(
       pinned: true,
-      expandedHeight: 292,
+      expandedHeight: 250,
       backgroundColor: AppColors.primary,
       foregroundColor: Colors.white,
       elevation: 0,
@@ -153,7 +158,7 @@ class _HomeHero extends StatelessWidget {
             ),
             SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 84, 24, 20),
+                padding: const EdgeInsets.fromLTRB(24, 70, 24, 16),
                 child: Align(
                   alignment: Alignment.bottomCenter,
                   child: ConstrainedBox(
@@ -179,7 +184,7 @@ class _HomeHero extends StatelessWidget {
                             height: 1.08,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         _ProgressSummary(progress: progress),
                       ],
                     ),
@@ -326,6 +331,232 @@ class _QuickStartCard extends StatelessWidget {
   }
 }
 
+class _DailyActions extends StatelessWidget {
+  final int favoritesCount;
+  final int quizCount;
+  final VoidCallback onQuizTap;
+  final VoidCallback onSubjectsTap;
+  final VoidCallback onLibraryTap;
+
+  const _DailyActions({
+    required this.favoritesCount,
+    required this.quizCount,
+    required this.onQuizTap,
+    required this.onSubjectsTap,
+    required this.onLibraryTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final actions = [
+      _PlanAction(
+        icon: Icons.bolt_rounded,
+        label: 'Quiz express',
+        detail: quizCount == 0
+            ? 'S’entraîner'
+            : '$quizCount disponible${quizCount > 1 ? 's' : ''}',
+        color: AppColors.tertiary,
+        onTap: onQuizTap,
+      ),
+      _PlanAction(
+        icon: Icons.description_rounded,
+        label: 'Un sujet',
+        detail: 'Lire & comprendre',
+        color: AppColors.secondary,
+        onTap: onSubjectsTap,
+      ),
+      _PlanAction(
+        icon: Icons.bookmark_rounded,
+        label: 'Mes favoris',
+        detail: '$favoritesCount enregistré${favoritesCount > 1 ? 's' : ''}',
+        color: AppColors.warning,
+        onTap: onLibraryTap,
+      ),
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth >= 640) {
+          return Row(
+            children: actions
+                .map(
+                  (action) => Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        right: action == actions.last ? 0 : 12,
+                      ),
+                      child: _PlanActionCard(action: action),
+                    ),
+                  ),
+                )
+                .toList(),
+          );
+        }
+
+        return SizedBox(
+          height: 112,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            itemCount: actions.length,
+            separatorBuilder: (_, _) => const SizedBox(width: 10),
+            itemBuilder: (context, index) => SizedBox(
+              width: 158,
+              child: _PlanActionCard(action: actions[index]),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _PlanAction {
+  final IconData icon;
+  final String label;
+  final String detail;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _PlanAction({
+    required this.icon,
+    required this.label,
+    required this.detail,
+    required this.color,
+    required this.onTap,
+  });
+}
+
+class _PlanActionCard extends StatelessWidget {
+  final _PlanAction action;
+
+  const _PlanActionCard({required this.action});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCardPremium(
+      onTap: action.onTap,
+      padding: const EdgeInsets.all(13),
+      shadows: AppShadows.subtle,
+      border: AppBorders.subtle,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: action.color.withValues(alpha: 0.13),
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                child: Icon(action.icon, color: action.color, size: 18),
+              ),
+              const Spacer(),
+              Icon(Icons.arrow_outward_rounded, color: action.color, size: 17),
+            ],
+          ),
+          const Spacer(),
+          Text(
+            action.label,
+            style: AppTextStyles.titleSmall.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 2),
+          Text(
+            action.detail,
+            style: AppTextStyles.labelSmall.copyWith(
+              color: AppColors.textTertiary,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MotivationCard extends StatelessWidget {
+  final double progress;
+  final VoidCallback onTap;
+
+  const _MotivationCard({required this.progress, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCardPremium(
+      onTap: onTap,
+      padding: EdgeInsets.zero,
+      shadows: AppShadows.medium,
+      border: AppBorders.none,
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppColors.secondary, AppColors.primary],
+          ),
+          borderRadius: BorderRadius.circular(AppRadius.card),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+              ),
+              child: const Icon(
+                Icons.local_fire_department_rounded,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 13),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Petit pas, grand résultat',
+                    style: AppTextStyles.titleMedium.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Tu as déjà ${(progress * 100).round()}% du chemin. Continue avec une courte session.',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: Colors.white.withValues(alpha: 0.82),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(
+              Icons.arrow_forward_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _SubjectCollection extends StatelessWidget {
   final List<CoreSubject> subjects;
   final VoidCallback onTap;
@@ -343,7 +574,7 @@ class _SubjectCollection extends StatelessWidget {
             itemCount: subjects.length,
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 240,
-              mainAxisExtent: 148,
+              mainAxisExtent: 126,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
             ),
@@ -353,14 +584,14 @@ class _SubjectCollection extends StatelessWidget {
         }
 
         return SizedBox(
-          height: 148,
+          height: 126,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
             itemCount: subjects.length,
             separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (context, index) => SizedBox(
-              width: 188,
+              width: 158,
               child: _SubjectCard(subject: subjects[index], onTap: onTap),
             ),
           ),
@@ -380,7 +611,7 @@ class _SubjectCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppCardPremium(
       onTap: onTap,
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.all(12),
       shadows: AppShadows.soft,
       border: AppBorders.subtle,
       child: Column(
@@ -389,12 +620,12 @@ class _SubjectCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(9),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: subject.color.withValues(alpha: 0.13),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(subject.icon, color: subject.color, size: 22),
+                child: Icon(subject.icon, color: subject.color, size: 20),
               ),
               const Spacer(),
               const Icon(
@@ -436,118 +667,6 @@ class _SubjectCard extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _RecentExamCard extends StatelessWidget {
-  final String subject;
-  final String year;
-  final String series;
-  final bool hasCorrection;
-
-  const _RecentExamCard({
-    required this.subject,
-    required this.year,
-    required this.series,
-    required this.hasCorrection,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AppCardPremium(
-      onTap: () => context.push(AppRoutes.subjects),
-      padding: const EdgeInsets.all(16),
-      shadows: AppShadows.soft,
-      border: AppBorders.subtle,
-      child: Row(
-        children: [
-          const IconBadgeForRecent(),
-          const SizedBox(width: 13),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  subject,
-                  style: AppTextStyles.titleMedium.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '$year  •  $series',
-                  style: AppTextStyles.bodySmall,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          _StatusPill(hasCorrection: hasCorrection),
-        ],
-      ),
-    );
-  }
-}
-
-class IconBadgeForRecent extends StatelessWidget {
-  const IconBadgeForRecent({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 44,
-      height: 44,
-      decoration: BoxDecoration(
-        color: AppColors.secondaryContainer,
-        borderRadius: BorderRadius.circular(13),
-      ),
-      child: const Icon(
-        Icons.description_rounded,
-        color: AppColors.secondary,
-        size: 22,
-      ),
-    );
-  }
-}
-
-class _StatusPill extends StatelessWidget {
-  final bool hasCorrection;
-
-  const _StatusPill({required this.hasCorrection});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = hasCorrection ? AppColors.success : AppColors.textTertiary;
-    final background = hasCorrection
-        ? AppColors.successContainer
-        : AppColors.surfaceContainer;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            hasCorrection ? Icons.check_circle_rounded : Icons.schedule_rounded,
-            color: color,
-            size: 14,
-          ),
-          const SizedBox(width: 4),
-          Text(
-            hasCorrection ? 'Corrigé' : 'À revoir',
-            style: AppTextStyles.labelSmall.copyWith(
-              color: color,
-              fontWeight: FontWeight.w700,
-            ),
           ),
         ],
       ),

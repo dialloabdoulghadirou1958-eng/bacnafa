@@ -31,7 +31,9 @@ Future<SelectionItem<T>?> showAppSelectionSheet<T>({
     useSafeArea: true,
     backgroundColor: AppColors.surface,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.dialog)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(AppRadius.dialog),
+      ),
     ),
     builder: (context) => _SelectionSheet<T>(
       title: title,
@@ -94,8 +96,7 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
   List<SelectionItem<T>> get _filtered {
     final q = _query.trim().toLowerCase();
     if (q.isEmpty) return widget.items;
-    return widget
-        .items
+    return widget.items
         .where((e) => e.label.toLowerCase().contains(q))
         .toList(growable: false);
   }
@@ -103,8 +104,8 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
-    final maxHeight = mq.size.height * 0.85;
-    final accent = const Color(0xFF5A54E8);
+    final maxHeight = mq.size.height * 0.82;
+    const accent = AppColors.primary;
 
     final filtered = _filtered;
     final hasResults = filtered.isNotEmpty;
@@ -128,17 +129,45 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 0),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.md,
+                AppSpacing.lg,
+                0,
+              ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryContainer,
+                      borderRadius: BorderRadius.circular(AppRadius.medium),
+                    ),
+                    child: const Icon(
+                      Icons.location_on_rounded,
+                      color: AppColors.primary,
+                      size: 21,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
-                    child: Text(
-                      widget.title,
-                      style: AppTextStyles.headlineSmall.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.title,
+                          style: AppTextStyles.titleLarge.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${widget.items.length} villes et communes disponibles',
+                          style: AppTextStyles.bodySmall,
+                        ),
+                      ],
                     ),
                   ),
                   IconButton(
@@ -146,7 +175,10 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
                     icon: const Icon(Icons.close_rounded, size: 22),
                     color: AppColors.textTertiary,
                     padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                    constraints: const BoxConstraints(
+                      minWidth: 40,
+                      minHeight: 40,
+                    ),
                     visualDensity: VisualDensity.compact,
                   ),
                 ],
@@ -179,7 +211,9 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
                       padding: const EdgeInsets.only(left: 12, right: 8),
                       child: Icon(
                         Icons.search_rounded,
-                        color: _searchHasFocus ? accent : AppColors.textTertiary,
+                        color: _searchHasFocus
+                            ? accent
+                            : AppColors.textTertiary,
                         size: 20,
                       ),
                     ),
@@ -192,12 +226,17 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
                             icon: const Icon(Icons.close_rounded, size: 18),
                             color: AppColors.textTertiary,
                             padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                            constraints: const BoxConstraints(
+                              minWidth: 40,
+                              minHeight: 40,
+                            ),
                             visualDensity: VisualDensity.compact,
                           )
                         : null,
                     filled: true,
-                    fillColor: Colors.transparent,
+                    fillColor: AppColors.primaryContainer.withValues(
+                      alpha: 0.38,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(AppRadius.medium),
                       borderSide: BorderSide.none,
@@ -210,8 +249,10 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
                       borderRadius: BorderRadius.circular(AppRadius.medium),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                     isDense: true,
                   ),
                   style: TextStyle(
@@ -225,7 +266,9 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
             const SizedBox(height: AppSpacing.md),
             !hasResults
                 ? Padding(
-                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxl),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.xxl,
+                    ),
                     child: Column(
                       children: [
                         Icon(
@@ -259,7 +302,8 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
                         itemBuilder: (context, index) {
                           final item = filtered[index];
                           final isSelected = _selected?.id == item.id;
-                          final showHeader = item.group != null &&
+                          final showHeader =
+                              item.group != null &&
                               (index == 0 ||
                                   filtered[index - 1].group != item.group);
 
@@ -271,12 +315,16 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
                                   Padding(
                                     padding: EdgeInsets.fromLTRB(
                                       AppSpacing.lg,
-                                      index == 0 ? AppSpacing.sm : AppSpacing.md,
+                                      index == 0
+                                          ? AppSpacing.sm
+                                          : AppSpacing.md,
                                       AppSpacing.lg,
                                       AppSpacing.xs,
                                     ),
                                     child: Text(
-                                      _query.trim().isEmpty ? item.group! : 'Résultats',
+                                      _query.trim().isEmpty
+                                          ? item.group!
+                                          : 'Résultats',
                                       style: AppTextStyles.labelMedium.copyWith(
                                         color: AppColors.textTertiary,
                                         letterSpacing: 1.2,
@@ -298,10 +346,11 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
                                   ),
                                   decoration: BoxDecoration(
                                     color: isSelected
-                                        ? const Color(0xFF5A54E8).withValues(alpha: 0.08)
+                                        ? AppColors.primaryContainer
                                         : Colors.transparent,
-                                    borderRadius:
-                                        BorderRadius.circular(AppRadius.medium),
+                                    borderRadius: BorderRadius.circular(
+                                      AppRadius.medium,
+                                    ),
                                   ),
                                   child: Row(
                                     children: [
@@ -310,10 +359,11 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
                                         height: 36,
                                         decoration: BoxDecoration(
                                           color: isSelected
-                                              ? const Color(0xFF5A54E8)
+                                              ? AppColors.primary
                                               : AppColors.surfaceContainer,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
                                         ),
                                         child: Icon(
                                           Icons.location_on_rounded,
@@ -327,18 +377,19 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
                                       Expanded(
                                         child: Text(
                                           item.label,
-                                          style: AppTextStyles.titleMedium.copyWith(
-                                            color: AppColors.textPrimary,
-                                            fontWeight: isSelected
-                                                ? FontWeight.w700
-                                                : FontWeight.w500,
-                                          ),
+                                          style: AppTextStyles.titleMedium
+                                              .copyWith(
+                                                color: AppColors.textPrimary,
+                                                fontWeight: isSelected
+                                                    ? FontWeight.w700
+                                                    : FontWeight.w500,
+                                              ),
                                         ),
                                       ),
                                       if (isSelected)
                                         const Icon(
                                           Icons.check_circle_rounded,
-                                          color: Color(0xFF5A54E8),
+                                          color: AppColors.primary,
                                           size: 22,
                                         ),
                                     ],

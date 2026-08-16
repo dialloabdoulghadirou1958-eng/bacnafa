@@ -15,6 +15,7 @@ class AppTextField extends StatefulWidget {
   final TextCapitalization textCapitalization;
   final void Function(String)? onChanged;
   final ValueChanged<String>? onSubmitted;
+  final bool compact;
 
   const AppTextField({
     super.key,
@@ -28,6 +29,7 @@ class AppTextField extends StatefulWidget {
     this.textCapitalization = TextCapitalization.none,
     this.onChanged,
     this.onSubmitted,
+    this.compact = false,
   });
 
   @override
@@ -55,7 +57,7 @@ class _AppTextFieldState extends State<AppTextField> {
 
   @override
   Widget build(BuildContext context) {
-    final accentColor = const Color(0xFF5A54E8);
+    final accentColor = AppColors.primary;
     final borderColor = _hasFocus ? accentColor : AppColors.outlineVariant;
     final borderWidth = _hasFocus ? 1.5 : 1.0;
 
@@ -66,21 +68,25 @@ class _AppTextFieldState extends State<AppTextField> {
           widget.label,
           style: AppTextStyles.labelLarge.copyWith(
             color: _hasFocus ? accentColor : AppColors.textSecondary,
+            fontWeight: FontWeight.w700,
           ),
         ),
         SizedBox(height: AppSpacing.xs),
         AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: _hasFocus
+                ? AppColors.primaryContainer.withValues(alpha: 0.24)
+                : AppColors.surface,
             borderRadius: BorderRadius.circular(AppRadius.medium),
             border: Border.all(color: borderColor, width: borderWidth),
             boxShadow: _hasFocus
                 ? [
                     BoxShadow(
                       color: accentColor.withValues(alpha: 0.12),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+                      blurRadius: 14,
+                      offset: const Offset(0, 5),
+                      spreadRadius: -5,
                     ),
                   ]
                 : null,
@@ -101,7 +107,10 @@ class _AppTextFieldState extends State<AppTextField> {
               ),
               prefixIcon: widget.prefixIcon != null
                   ? Padding(
-                      padding: const EdgeInsets.only(left: 12, right: 8),
+                      padding: EdgeInsets.only(
+                        left: widget.compact ? 10 : 12,
+                        right: widget.compact ? 6 : 8,
+                      ),
                       child: Icon(
                         widget.prefixIcon,
                         color: _hasFocus ? accentColor : AppColors.textTertiary,
@@ -111,7 +120,7 @@ class _AppTextFieldState extends State<AppTextField> {
                   : null,
               suffixIcon: widget.suffixIcon,
               filled: true,
-              fillColor: AppColors.surface,
+              fillColor: Colors.transparent,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppRadius.medium),
                 borderSide: BorderSide.none,
@@ -124,8 +133,11 @@ class _AppTextFieldState extends State<AppTextField> {
                 borderRadius: BorderRadius.circular(AppRadius.medium),
                 borderSide: BorderSide.none,
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              isDense: false,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: widget.compact ? 14 : 16,
+                vertical: widget.compact ? 11 : 16,
+              ),
+              isDense: widget.compact,
             ),
             style: TextStyle(
               color: AppColors.textPrimary,

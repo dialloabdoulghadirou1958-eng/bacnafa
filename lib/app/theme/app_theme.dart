@@ -33,6 +33,8 @@ class AppTheme {
       scaffoldBackgroundColor: colorScheme.surfaceContainerLow,
       textTheme: AppTextStyles.textTheme,
       primaryTextTheme: AppTextStyles.textTheme,
+      splashFactory: InkSparkle.splashFactory,
+      highlightColor: colorScheme.primary.withValues(alpha: 0.05),
 
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
@@ -112,6 +114,27 @@ class AppTheme {
         ),
       ),
 
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: colorScheme.surface,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        hintStyle: AppTextStyles.bodyMedium.copyWith(
+          color: AppColors.textTertiary,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.borderSubtle),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.borderSubtle),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+        ),
+      ),
+
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: colorScheme.primaryContainer,
         foregroundColor: colorScheme.onPrimaryContainer,
@@ -157,6 +180,16 @@ class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: colorScheme.surface,
         indicatorColor: colorScheme.primaryContainer,
+        indicatorShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return IconThemeData(
+            color: selected ? colorScheme.primary : AppColors.textTertiary,
+            size: selected ? 25 : 23,
+          );
+        }),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return const TextStyle(
@@ -171,8 +204,18 @@ class AppTheme {
             letterSpacing: 0.1,
           );
         }),
-        height: 72,
+        height: 74,
         surfaceTintColor: Colors.transparent,
+      ),
+
+      scrollbarTheme: ScrollbarThemeData(
+        thumbColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.dragged)
+              ? colorScheme.primary.withValues(alpha: 0.65)
+              : AppColors.textTertiary.withValues(alpha: 0.35),
+        ),
+        thickness: const WidgetStatePropertyAll(4),
+        radius: const Radius.circular(999),
       ),
 
       dividerTheme: DividerThemeData(
