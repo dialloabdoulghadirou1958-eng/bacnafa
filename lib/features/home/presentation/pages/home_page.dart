@@ -31,7 +31,11 @@ class HomePage extends ConsumerWidget {
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          _HomeHero(userName: user.name, progress: user.progress),
+          _HomeHero(
+            userName: user.name,
+            progress: user.progress,
+            onResume: () => context.push(AppRoutes.subjects),
+          ),
           SliverToBoxAdapter(
             child: AppResponsiveContent(
               child: Padding(
@@ -39,10 +43,7 @@ class HomePage extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _QuickStartCard(
-                      onTap: () => context.push(AppRoutes.subjects),
-                    ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 4),
                     const AppSectionHeading(
                       title: 'Ton plan de révision',
                       subtitle: 'Des raccourcis pour avancer aujourd’hui',
@@ -86,14 +87,19 @@ class HomePage extends ConsumerWidget {
 class _HomeHero extends StatelessWidget {
   final String userName;
   final double progress;
+  final VoidCallback onResume;
 
-  const _HomeHero({required this.userName, required this.progress});
+  const _HomeHero({
+    required this.userName,
+    required this.progress,
+    required this.onResume,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
       pinned: true,
-      expandedHeight: 220,
+      expandedHeight: 190,
       backgroundColor: AppColors.primary,
       foregroundColor: Colors.white,
       elevation: 0,
@@ -150,7 +156,7 @@ class _HomeHero extends StatelessWidget {
             ),
             SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 58, 24, 14),
+                padding: const EdgeInsets.fromLTRB(24, 48, 24, 10),
                 child: Align(
                   alignment: Alignment.bottomCenter,
                   child: ConstrainedBox(
@@ -169,7 +175,7 @@ class _HomeHero extends StatelessWidget {
                         ),
                         const SizedBox(height: 7),
                         Text(
-                          'Prêt pour ta prochaine\nrévision ?',
+                          'Prêt pour ta prochaine révision ?',
                           style: AppTextStyles.displaySmall.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w800,
@@ -177,7 +183,10 @@ class _HomeHero extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        _ProgressSummary(progress: progress),
+                        _ProgressSummary(
+                          progress: progress,
+                          onResume: onResume,
+                        ),
                       ],
                     ),
                   ),
@@ -193,8 +202,9 @@ class _HomeHero extends StatelessWidget {
 
 class _ProgressSummary extends StatelessWidget {
   final double progress;
+  final VoidCallback onResume;
 
-  const _ProgressSummary({required this.progress});
+  const _ProgressSummary({required this.progress, required this.onResume});
 
   @override
   Widget build(BuildContext context) {
@@ -247,77 +257,18 @@ class _ProgressSummary extends StatelessWidget {
               fontWeight: FontWeight.w800,
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _QuickStartCard extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const _QuickStartCard({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return AppCardPremium(
-      onTap: onTap,
-      padding: EdgeInsets.zero,
-      shadows: AppShadows.medium,
-      border: AppBorders.none,
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [AppColors.surface, AppColors.primaryContainer],
+          const SizedBox(width: 8),
+          IconButton(
+            onPressed: onResume,
+            tooltip: 'Reprendre ma révision',
+            visualDensity: VisualDensity.compact,
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.white.withValues(alpha: 0.16),
+              foregroundColor: Colors.white,
+            ),
+            icon: const Icon(Icons.arrow_forward_rounded, size: 18),
           ),
-          borderRadius: BorderRadius.circular(AppRadius.card),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(AppRadius.medium),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.25),
-                    blurRadius: 14,
-                    offset: const Offset(0, 7),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.play_arrow_rounded,
-                color: Colors.white,
-                size: 28,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Objectif du jour', style: AppTextStyles.labelLarge),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Lance une nouvelle session de révision',
-                    style: AppTextStyles.titleMedium,
-                  ),
-                ],
-              ),
-            ),
-            const Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: AppColors.primary,
-              size: 17,
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
