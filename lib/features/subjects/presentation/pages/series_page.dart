@@ -5,6 +5,7 @@ import 'package:bac_nafa/app/routes.dart';
 import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/app/theme/app_text_styles.dart';
 import 'package:bac_nafa/core/design/app_radius.dart';
+import 'package:bac_nafa/core/design/app_shadows.dart';
 import 'package:bac_nafa/core/widgets/app_card_premium.dart';
 import 'package:bac_nafa/core/widgets/app_responsive.dart';
 import 'package:bac_nafa/features/subjects/domain/models/bac_series.dart';
@@ -56,7 +57,7 @@ class SeriesPageAsSeries extends ConsumerWidget {
                     gridDelegate:
                         const SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 380,
-                          mainAxisExtent: 198,
+                          mainAxisExtent: 150,
                           crossAxisSpacing: 14,
                           mainAxisSpacing: 14,
                         ),
@@ -100,56 +101,120 @@ class _SeriesCard extends StatelessWidget {
     final accent = series.accentColor;
     return AppCardPremium(
       onTap: onTap,
-      padding: const EdgeInsets.all(18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      accent.withValues(alpha: 0.95),
-                      accent.withValues(alpha: 0.65),
+      padding: EdgeInsets.zero,
+      shadows: AppShadows.soft,
+      border: BorderSide(color: accent.withValues(alpha: 0.16)),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        child: Stack(
+          children: [
+            Positioned(
+              top: -28,
+              right: -18,
+              child: Icon(
+                series.icon,
+                size: 126,
+                color: accent.withValues(alpha: 0.08),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              child: Container(width: 5, color: accent),
+            ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 12, 14, 11),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Colors.white, accent.withValues(alpha: 0.045)],
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [accent, accent.withValues(alpha: 0.68)],
+                          ),
+                          borderRadius: BorderRadius.circular(AppRadius.medium),
+                          boxShadow: [
+                            BoxShadow(
+                              color: accent.withValues(alpha: 0.22),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: Icon(series.icon, color: Colors.white, size: 19),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          series.name,
+                          style: AppTextStyles.titleMedium.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.arrow_outward_rounded,
+                        color: accent,
+                        size: 18,
+                      ),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(AppRadius.medium),
-                ),
-                child: Icon(series.icon, color: Colors.white, size: 23),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: Text(
+                      series.description,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textTertiary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        'Explorer la filière',
+                        style: AppTextStyles.labelLarge.copyWith(
+                          color: accent,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const Spacer(),
+                      Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: accent.withValues(alpha: 0.10),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.arrow_forward_rounded,
+                          color: accent,
+                          size: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              const Spacer(),
-              Icon(Icons.arrow_outward_rounded, color: accent, size: 20),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Text(
-            series.name,
-            style: AppTextStyles.titleMedium.copyWith(
-              fontWeight: FontWeight.w800,
             ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 5),
-          Expanded(
-            child: Text(
-              series.description,
-              style: AppTextStyles.bodySmall,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          Text(
-            'Explorer la filière',
-            style: AppTextStyles.labelLarge.copyWith(
-              color: accent,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
