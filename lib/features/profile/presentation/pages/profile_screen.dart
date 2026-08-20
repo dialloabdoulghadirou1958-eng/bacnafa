@@ -34,7 +34,7 @@ class ProfileScreen extends ConsumerWidget {
           slivers: [
             SliverAppBar(
               pinned: true,
-              expandedHeight: 202,
+              expandedHeight: 178,
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               systemOverlayStyle: AppTheme.lightOnDarkStatusBar,
@@ -167,30 +167,22 @@ class _ProfileHero extends StatelessWidget {
           right: -50,
           top: -76,
           child: _ProfileOrb(
-            size: 190,
-            color: Colors.white.withValues(alpha: 0.08),
-          ),
-        ),
-        Positioned(
-          left: -72,
-          bottom: -110,
-          child: _ProfileOrb(
-            size: 210,
-            color: Colors.black.withValues(alpha: 0.08),
+            size: 160,
+            color: Colors.white.withValues(alpha: 0.06),
           ),
         ),
         SafeArea(
           child: Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 64, 24, 16),
+              padding: const EdgeInsets.fromLTRB(24, 52, 24, 12),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1080),
                 child: Row(
                   children: [
                     Container(
-                      width: 76,
-                      height: 76,
+                      width: 66,
+                      height: 66,
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.16),
                         shape: BoxShape.circle,
@@ -202,7 +194,7 @@ class _ProfileHero extends StatelessWidget {
                       child: const Icon(
                         Icons.person_rounded,
                         color: Colors.white,
-                        size: 40,
+                        size: 34,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -227,10 +219,24 @@ class _ProfileHero extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 6),
-                          Text(
-                            'Série ${user.bacSeries}  •  BAC ${user.bacYear}',
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: Colors.white.withValues(alpha: 0.82),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 9,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.14),
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.16),
+                              ),
+                            ),
+                            child: Text(
+                              '${user.bacSeries}  •  BAC ${user.bacYear}',
+                              style: AppTextStyles.labelSmall.copyWith(
+                                color: Colors.white.withValues(alpha: 0.88),
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                         ],

@@ -93,7 +93,7 @@ class _HomeHero extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverAppBar(
       pinned: true,
-      expandedHeight: 250,
+      expandedHeight: 220,
       backgroundColor: AppColors.primary,
       foregroundColor: Colors.white,
       elevation: 0,
@@ -144,21 +144,13 @@ class _HomeHero extends StatelessWidget {
               top: -82,
               right: -48,
               child: _HeroOrb(
-                size: 220,
-                color: Colors.white.withValues(alpha: 0.08),
-              ),
-            ),
-            Positioned(
-              bottom: -96,
-              left: -84,
-              child: _HeroOrb(
-                size: 230,
-                color: Colors.black.withValues(alpha: 0.08),
+                size: 180,
+                color: Colors.white.withValues(alpha: 0.06),
               ),
             ),
             SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 70, 24, 16),
+                padding: const EdgeInsets.fromLTRB(24, 58, 24, 14),
                 child: Align(
                   alignment: Alignment.bottomCenter,
                   child: ConstrainedBox(
@@ -177,14 +169,14 @@ class _HomeHero extends StatelessWidget {
                         ),
                         const SizedBox(height: 7),
                         Text(
-                          'Prêt à faire\nprogresser ton Bac ?',
+                          'Prêt pour ta prochaine\nrévision ?',
                           style: AppTextStyles.displaySmall.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w800,
-                            height: 1.08,
+                            height: 1.04,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 10),
                         _ProgressSummary(progress: progress),
                       ],
                     ),
@@ -207,7 +199,7 @@ class _ProgressSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 13),
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 11),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.13),
         borderRadius: BorderRadius.circular(AppRadius.medium),
@@ -215,8 +207,8 @@ class _ProgressSummary extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.insights_rounded, color: Colors.white, size: 19),
-          const SizedBox(width: 10),
+          const Icon(Icons.insights_rounded, color: Colors.white, size: 18),
+          const SizedBox(width: 9),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,7 +219,7 @@ class _ProgressSummary extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.78),
                   ),
                 ),
-                const SizedBox(height: 7),
+                const SizedBox(height: 5),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: TweenAnimationBuilder<double>(
