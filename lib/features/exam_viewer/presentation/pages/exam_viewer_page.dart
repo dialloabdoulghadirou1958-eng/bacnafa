@@ -3,6 +3,7 @@ import 'package:bac_nafa/app/theme/app_colors.dart';
 import 'package:bac_nafa/app/theme/app_text_styles.dart';
 import 'package:bac_nafa/core/services/exam_actions.dart';
 import 'package:bac_nafa/core/widgets/app_responsive.dart';
+import 'package:bac_nafa/features/exam_viewer/models/exam_content.dart';
 import 'package:bac_nafa/features/exam_viewer/presentation/widgets/exam_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bac_nafa/features/exam_viewer/providers/exam_providers.dart';
@@ -149,7 +150,7 @@ class _ExamViewerPageState extends ConsumerState<ExamViewerPage> {
 }
 
 class _ExamContext extends StatelessWidget {
-  final dynamic exam;
+  final ExamContent exam;
 
   const _ExamContext({required this.exam});
 

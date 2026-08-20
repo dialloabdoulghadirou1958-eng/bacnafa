@@ -280,10 +280,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           const _LoginHero(compact: true),
                           const SizedBox(height: 12),
                           Expanded(
-                            child: _buildFormCard(
-                              cityMissing: cityMissing,
-                              isLoading: isLoading,
-                              compact: true,
+                            child: SingleChildScrollView(
+                              physics: const BouncingScrollPhysics(),
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: _buildFormCard(
+                                cityMissing: cityMissing,
+                                isLoading: isLoading,
+                                compact: true,
+                              ),
                             ),
                           ),
                         ],
@@ -311,11 +315,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           : const EdgeInsets.symmetric(horizontal: 24),
       child: Container(
         padding: compact
-            ? const EdgeInsets.fromLTRB(18, 16, 18, 14)
+            ? const EdgeInsets.fromLTRB(18, 18, 18, 16)
             : const EdgeInsets.all(26),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.dialog),
+          border: Border.all(color: AppColors.borderSubtle),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.10),
@@ -333,7 +338,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   width: compact ? 34 : 38,
                   height: compact ? 34 : 38,
                   decoration: BoxDecoration(
-                    color: AppColors.primaryContainer,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.primaryContainer,
+                        AppColors.primaryContainer.withValues(alpha: 0.62),
+                      ],
+                    ),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
@@ -350,8 +362,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       Text(
                         'Ton profil élève',
                         style: compact
-                            ? AppTextStyles.titleLarge
-                            : AppTextStyles.headlineSmall,
+                            ? AppTextStyles.titleLarge.copyWith(
+                                fontWeight: FontWeight.w800,
+                              )
+                            : AppTextStyles.headlineSmall.copyWith(
+                                fontWeight: FontWeight.w800,
+                              ),
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -390,6 +406,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               hasError: cityMissing,
               compact: compact,
               onTap: () async {
+                FocusScope.of(context).unfocus();
                 final selected = await showAppSelectionSheet(
                   context: context,
                   title: 'Sélectionne ta ville',
@@ -524,6 +541,11 @@ class _LoginHero extends StatelessWidget {
               clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(compact ? 24 : 32),
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [AppColors.primaryHighlight, AppColors.tertiary],
+                ),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: 0.28),
                   width: 3,
@@ -536,9 +558,24 @@ class _LoginHero extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Image.asset(
-                'assets/branding/app_icon.png',
-                fit: BoxFit.cover,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(
+                    Icons.school_rounded,
+                    size: compact ? 38 : 68,
+                    color: Colors.white,
+                  ),
+                  Positioned(
+                    top: compact ? 8 : 14,
+                    right: compact ? 8 : 14,
+                    child: Icon(
+                      Icons.auto_awesome_rounded,
+                      size: compact ? 14 : 22,
+                      color: const Color(0xFFFFE082),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

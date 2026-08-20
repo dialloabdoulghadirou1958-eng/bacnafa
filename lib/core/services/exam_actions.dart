@@ -46,6 +46,9 @@ class AddToHistoryCoordinator extends Notifier<void> {
 
 final isFavoriteProvider = Provider.autoDispose.family<bool, String>((ref, examId) {
   return ref.watch(favoritesProvider.select(
-    (list) => list.any((f) => f.itemId == examId && f.type == FavoriteType.subject),
+    (asyncValue) => asyncValue.maybeWhen(
+      data: (list) => list.any((f) => f.itemId == examId && f.type == FavoriteType.subject),
+      orElse: () => false,
+    ),
   ));
 });

@@ -6,6 +6,7 @@ import 'package:bac_nafa/app/theme/app_text_styles.dart';
 import 'package:bac_nafa/core/design/app_radius.dart';
 import 'package:bac_nafa/core/widgets/app_card_premium.dart';
 import 'package:bac_nafa/core/widgets/app_responsive.dart';
+import 'package:bac_nafa/features/library/domain/models/library_models.dart';
 import 'package:bac_nafa/features/library/providers/library_providers.dart';
 
 class LibraryPage extends ConsumerWidget {
@@ -13,8 +14,9 @@ class LibraryPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final favorites = ref.watch(favoritesProvider);
+    final favoritesAsync = ref.watch(favoritesProvider);
     final history = ref.watch(historyProvider);
+    final List<FavoriteItem> favorites = favoritesAsync.maybeWhen(data: (d) => d, orElse: () => <FavoriteItem>[]);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Ma bibliothèque')),
@@ -46,7 +48,9 @@ class LibraryPage extends ConsumerWidget {
                       '${favorites.length} sujet${favorites.length > 1 ? 's' : ''} enregistré${favorites.length > 1 ? 's' : ''}',
                 ),
                 const SizedBox(height: 12),
-                if (favorites.isEmpty)
+                if (favoritesAsync is AsyncLoading)
+                  const Center(child: CircularProgressIndicator(strokeWidth: 2.5))
+                else if (favorites.isEmpty)
                   const _LibraryEmptySlot(
                     message:
                         'Ajoute une étoile à un sujet pour le retrouver ici.',

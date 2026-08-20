@@ -56,7 +56,7 @@ class SubjectsPageAsSubjects extends ConsumerWidget {
                     gridDelegate:
                         const SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 390,
-                          mainAxisExtent: 172,
+                          mainAxisExtent: 150,
                           crossAxisSpacing: 14,
                           mainAxisSpacing: 14,
                         ),
@@ -70,7 +70,7 @@ class SubjectsPageAsSubjects extends ConsumerWidget {
                             ref
                                 .read(selectedSubjectProvider.notifier)
                                 .set(subject);
-                            context.push(AppRoutes.exam('sample'));
+                            context.push(AppRoutes.exams);
                           },
                         ),
                       );
@@ -120,7 +120,7 @@ class _SubjectCard extends StatelessWidget {
               ),
             ),
             Container(
-              padding: const EdgeInsets.all(13),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
@@ -137,8 +137,8 @@ class _SubjectCard extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        width: 40,
-                        height: 40,
+                        width: 36,
+                        height: 36,
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.18),
                           borderRadius: BorderRadius.circular(AppRadius.medium),
@@ -149,14 +149,14 @@ class _SubjectCard extends StatelessWidget {
                         child: Icon(
                           subject.icon,
                           color: Colors.white,
-                          size: 20,
+                          size: 18,
                         ),
                       ),
                       const Spacer(),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 9,
-                          vertical: 6,
+                          vertical: 5,
                         ),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.16),
@@ -175,14 +175,14 @@ class _SubjectCard extends StatelessWidget {
                   const Spacer(),
                   Text(
                     subject.name,
-                    style: AppTextStyles.headlineSmall.copyWith(
+                    style: AppTextStyles.titleLarge.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w800,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 3),
                   Text(
                     subject.description,
                     style: AppTextStyles.bodySmall.copyWith(
@@ -191,7 +191,7 @@ class _SubjectCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   Row(
                     children: [
                       Text(

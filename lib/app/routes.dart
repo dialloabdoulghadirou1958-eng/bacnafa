@@ -12,6 +12,7 @@ class AppRoutes {
 
   static const splash = '/';
 
+  static const exams = '/exams';
   static String exam(String id) => '/exam/$id';
   static String quiz(String id) => '/quiz/$id';
 }

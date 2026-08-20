@@ -224,6 +224,20 @@ class _QuizPageState extends ConsumerState<QuizPage>
                           const SizedBox(height: 20),
                           Row(
                             children: [
+                              Container(
+                                width: 30,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryContainer,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Icon(
+                                  Icons.touch_app_rounded,
+                                  color: AppColors.primary,
+                                  size: 17,
+                                ),
+                              ),
+                              const SizedBox(width: 9),
                               Text(
                                 'Ta réponse',
                                 style: AppTextStyles.titleMedium.copyWith(
@@ -231,11 +245,28 @@ class _QuizPageState extends ConsumerState<QuizPage>
                                 ),
                               ),
                               const Spacer(),
-                              Text(
-                                _answered
-                                    ? 'Réponse enregistrée'
-                                    : 'Choisis une option',
-                                style: AppTextStyles.bodySmall,
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _answered
+                                      ? AppColors.successContainer
+                                      : AppColors.surfaceContainer,
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                child: Text(
+                                  _answered
+                                      ? 'Enregistrée'
+                                      : 'Choisis une option',
+                                  style: AppTextStyles.labelSmall.copyWith(
+                                    color: _answered
+                                        ? AppColors.success
+                                        : AppColors.textTertiary,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -359,7 +390,7 @@ class _QuestionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(22),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
@@ -375,41 +406,86 @@ class _QuestionCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(9),
+          Positioned(
+            top: -52,
+            right: -28,
+            child: Container(
+              width: 150,
+              height: 150,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.07),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -70,
+            left: 80,
+            child: Container(
+              width: 170,
+              height: 110,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.045),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(22),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 7,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.16),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.12),
+                        ),
+                      ),
+                      child: Text(
+                        'QUESTION ${number.toString().padLeft(2, '0')}',
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: Colors.white,
+                          letterSpacing: 1,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.lightbulb_outline_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ],
                 ),
-                child: Text(
-                  'QUESTION ${number.toString().padLeft(2, '0')}',
-                  style: AppTextStyles.labelSmall.copyWith(
+                const SizedBox(height: 24),
+                Text(
+                  question.text,
+                  style: AppTextStyles.headlineSmall.copyWith(
                     color: Colors.white,
-                    letterSpacing: 1,
                     fontWeight: FontWeight.w800,
+                    height: 1.3,
                   ),
                 ),
-              ),
-              const Spacer(),
-              const Icon(
-                Icons.lightbulb_outline_rounded,
-                color: Colors.white70,
-                size: 21,
-              ),
-            ],
-          ),
-          const SizedBox(height: 22),
-          Text(
-            question.text,
-            style: AppTextStyles.headlineSmall.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w800,
-              height: 1.3,
+              ],
             ),
           ),
         ],
@@ -465,6 +541,16 @@ class _AnswerOption extends StatelessWidget {
               : AppColors.borderSubtle,
           width: (showCorrect || showIncorrect || isSelected) ? 1.5 : 1,
         ),
+        boxShadow: isSelected
+            ? [
+                BoxShadow(
+                  color: accent.withValues(alpha: 0.16),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                  spreadRadius: -7,
+                ),
+              ]
+            : null,
       ),
       child: Material(
         color: Colors.transparent,

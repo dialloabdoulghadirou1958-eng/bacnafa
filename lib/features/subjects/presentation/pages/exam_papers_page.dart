@@ -7,6 +7,7 @@ import 'package:bac_nafa/core/design/app_radius.dart';
 import 'package:bac_nafa/core/widgets/app_card_premium.dart';
 import 'package:bac_nafa/core/widgets/app_responsive.dart';
 import 'package:bac_nafa/features/subjects/presentation/providers/subjects_providers.dart';
+import 'package:bac_nafa/features/subjects/domain/models/exam_paper.dart';
 import 'package:bac_nafa/features/subjects/presentation/widgets/info_badge.dart';
 
 class ExamPapersPage extends ConsumerStatefulWidget {
@@ -163,7 +164,7 @@ class _ExamPapersPageState extends ConsumerState<ExamPapersPage> {
 }
 
 class _ExamCard extends StatelessWidget {
-  final dynamic exam;
+  final ExamPaper exam;
 
   const _ExamCard({required this.exam});
 
